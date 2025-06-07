@@ -1,0 +1,11 @@
+class RouterName {
+  static const String lauch = '/lauch';
+  static const String splash = '/';
+  static const String signin = '/signin';
+  static const String signup = '/signup';
+  static const String welcome = '/welcome';
+  static const String home = '/home';
+  static const String forgotPassword = '/forgotPassword';
+  static const String pin = '/pin';
+  static const String recoverPassword = '/recoverPassword';
+}

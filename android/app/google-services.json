@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "878169348187",
+    "project_id": "wisespend-ae50c",
+    "storage_bucket": "wisespend-ae50c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878169348187:android:2a1bf8cf3042a09039877e",
+        "android_client_info": {
+          "package_name": "com.example.wise_spend_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQSkh85EH-kGrZfQbFdWWPl-Tpg2kQoEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
