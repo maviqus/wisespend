@@ -15,10 +15,8 @@ class SignUpService {
           );
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      print('Error signing up: ${e.message}');
       return null;
     } catch (e) {
-      print('Unexpected error: $e');
       return null;
     }
   }

@@ -4,6 +4,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:wise_spend_app/data/services/api_token_service.dart'; // Import ApiTokenService
 import 'package:wise_spend_app/modules/authenticator/services/sign_in_service.dart'; // Import SignInService
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -39,6 +40,9 @@ class SignInProvider extends ChangeNotifier {
         if (customToken != null) {
           // Sign in custom token
           await signInService.signInWithCustomToken(customToken);
+          // Lưu trạng thái đăng nhập
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('is_logged_in', true);
         } else {
           _errorMessage = 'Failed to get custom token';
         }
@@ -84,6 +88,9 @@ class SignInProvider extends ChangeNotifier {
           if (customToken != null) {
             // 3. Sign in custom token
             await signInService.signInWithCustomToken(customToken);
+            // Lưu trạng thái đăng nhập
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('is_logged_in', true);
           } else {
             _errorMessage = 'Failed to get custom token';
           }
@@ -135,6 +142,10 @@ class SignInProvider extends ChangeNotifier {
             print('Sign in with custom token result: $result');
             if (result == null) {
               _errorMessage = 'Sign in with custom token failed';
+            } else {
+              // Lưu trạng thái đăng nhập
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('is_logged_in', true);
             }
           } else {
             _errorMessage = 'Failed to get custom token';

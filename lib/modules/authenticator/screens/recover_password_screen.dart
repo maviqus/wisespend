@@ -76,7 +76,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                     radius: 30.r,
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
-                        final newPassword = _newPasswordController.text.trim();
+                        _newPasswordController.text.trim();
 
                         Navigator.pushReplacementNamed(
                           context,

@@ -1,315 +1,285 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wise_spend_app/core/utils/theme.dart';
+import 'package:provider/provider.dart';
+import 'package:wise_spend_app/core/widgets/root_navbar.widget.dart';
+import 'package:wise_spend_app/data/providers/category_provider.dart';
+import 'package:wise_spend_app/routers/router_name.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    context.read<CategoryProvider>().init();
+    final categories = [
+      {'asset': 'assets/images/ic_food.png', 'label': 'Food'},
+      {'asset': 'assets/images/ic_transport.png', 'label': 'Transport'},
+      {'asset': 'assets/images/ic_medicine.png', 'label': 'Medicine'},
+      {'asset': 'assets/images/ic_groceries.png', 'label': 'Groceries'},
+      {'asset': 'assets/images/ic_rent.png', 'label': 'Rent'},
+      {'asset': 'assets/images/ic_gift.png', 'label': 'Gifts'},
+      {'asset': 'assets/images/ic_savings.png', 'label': 'Savings'},
+      {'asset': 'assets/images/ic_entertainment.png', 'label': 'Hobbies	'},
+      {'asset': 'assets/images/ic_more.png', 'label': 'More'},
+    ];
+
     return Scaffold(
+      backgroundColor: const Color(0xff00D09E),
       appBar: AppBar(
-        title: const Text('Home'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: null,
+        title: Text(
+          'Categories',
+          style: GoogleFonts.poppins(
+            fontSize: 24.sp,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xff093030),
+          ),
+        ),
+        centerTitle: true,
         actions: [
-          IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
+          Padding(
+            padding: EdgeInsets.only(right: 16.w),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, RouterName.notification);
+              },
+              child: Image.asset(
+                'assets/images/ic_bell.png',
+                width: 32.sp,
+                height: 32.sp,
+                color: const Color(0xff093030),
+              ),
+            ),
+          ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Hi, Welcome Back',
-              style: GoogleFonts.poppins(
-                fontSize: 24.sp,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textColor,
-              ),
-            ),
-            Text(
-              'Good Morning',
-              style: GoogleFonts.poppins(
-                fontSize: 16.sp,
-                color: AppTheme.lightTextColor,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Column(
+        children: [
+          // Header
+          Container(
+            color: const Color(0xff00D09E),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Text(
-                      'Total Balance',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14.sp,
-                        color: AppTheme.lightTextColor,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Total Balance',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14.sp,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            '\$7,783.00',
+                            style: GoogleFonts.poppins(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      '\$7,783.00',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.textColor,
+                    Container(
+                      width: 1,
+                      height: 40.h,
+                      color: Colors.white.withOpacity(0.3),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Total Expense',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14.sp,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            '-\$1.187.40',
+                            style: GoogleFonts.poppins(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xff3299FF),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                SizedBox(height: 16.h),
+                //thanh progress
+                Row(
                   children: [
-                    Text(
-                      'Total Expense',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14.sp,
-                        color: AppTheme.lightTextColor,
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 4.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xff093030),
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      child: Text(
+                        '30%',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14.sp,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    Text(
-                      '-\$1.187.40',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 10.h),
-            Row(
-              children: [
-                Text(
-                  '30%',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14.sp,
-                    color: AppTheme.textColor,
-                  ),
-                ),
-                SizedBox(width: 5.w),
-                Expanded(
-                  child: LinearProgressIndicator(
-                    value: 0.3,
-                    backgroundColor: AppTheme.lightTextColor,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppTheme.primaryColor,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 5.w),
-                Text(
-                  '\$20,000.00',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14.sp,
-                    color: AppTheme.lightTextColor,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10.h),
-            Text(
-              '30% Of Your Expenses, Looks Good.',
-              style: GoogleFonts.poppins(
-                fontSize: 14.sp,
-                color: AppTheme.lightTextColor,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Container(
-              decoration: BoxDecoration(
-                color: AppTheme.secondaryColor,
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              padding: EdgeInsets.all(20.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      Icon(
-                        Icons.savings,
-                        size: 30.sp,
-                        color: AppTheme.primaryColor,
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'Savings',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: AppTheme.textColor,
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 8.w),
+                        height: 20.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20.r),
                         ),
-                      ),
-                      Text(
-                        'On Goals',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: AppTheme.textColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Icon(
-                        Icons.restaurant,
-                        size: 30.sp,
-                        color: AppTheme.primaryColor,
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'Revenue Last Week',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: AppTheme.textColor,
-                        ),
-                      ),
-                      Text(
-                        '\$4.000,00',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: AppTheme.textColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Icon(
-                        Icons.food_bank,
-                        size: 30.sp,
-                        color: AppTheme.primaryColor,
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'Food Last Week',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: AppTheme.textColor,
-                        ),
-                      ),
-                      Text(
-                        '-\$100.00',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  'Daily',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16.sp,
-                    color: AppTheme.lightTextColor,
-                  ),
-                ),
-                Text(
-                  'Weekly',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16.sp,
-                    color: AppTheme.lightTextColor,
-                  ),
-                ),
-                Text(
-                  'Monthly',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16.sp,
-                    color: AppTheme.primaryColor,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20.h),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 10.h),
-                    padding: EdgeInsets.all(10.w),
-                    decoration: BoxDecoration(
-                      color: AppTheme.backgroundColor,
-                      borderRadius: BorderRadius.circular(10.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 1,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.monetization_on,
-                          size: 30.sp,
-                          color: AppTheme.primaryColor,
-                        ),
-                        SizedBox(width: 10.w),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Stack(
                           children: [
-                            Text(
-                              'Salary',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16.sp,
-                                color: AppTheme.textColor,
+                            FractionallySizedBox(
+                              widthFactor: 0.3,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff00D09E),
+                                  borderRadius: BorderRadius.circular(20.r),
+                                ),
                               ),
                             ),
-                            Text(
-                              '18:27 - April 30',
-                              style: GoogleFonts.poppins(
-                                fontSize: 14.sp,
-                                color: AppTheme.lightTextColor,
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 12.w),
+                                child: Text(
+                                  '\$20,000.00',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14.sp,
+                                    color: const Color(0xff00D09E),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const Spacer(),
-                        Text(
-                          '\$4.000,00',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16.sp,
-                            color: AppTheme.textColor,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  );
-                },
+                  ],
+                ),
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.check_box,
+                      color: Color(0xff093030),
+                      size: 18,
+                    ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      '30% Of Your Expenses, Looks Good.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14.sp,
+                        color: const Color(0xff093030),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Body
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xffF1FFF3),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(50.r),
+                  topRight: Radius.circular(50.r),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+                child: GridView.builder(
+                  itemCount: categories.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 24.h,
+                    crossAxisSpacing: 24.w,
+                    childAspectRatio: 1,
+                  ),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final item = categories[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          RouterName.categories,
+                          arguments: {
+                            'icon': item['asset'],
+                            'label': item['label'],
+                          },
+                        );
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 80.w,
+                            height: 80.w,
+                            decoration: BoxDecoration(
+                              color: const Color(0xff6DB6FE),
+                              borderRadius: BorderRadius.circular(20.r),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                item['asset'] as String,
+                                width: 40.sp,
+                                height: 40.sp,
+                                color: const Color(0xffF1FFF3),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          SizedBox(
+                            width: 80.w,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                item['label'] as String,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xff093030),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Stats'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.swap_horiz),
-            label: 'Transfer',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Budget',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
+      bottomNavigationBar: RootNavBar(currentIndex: 0),
     );
   }
 }

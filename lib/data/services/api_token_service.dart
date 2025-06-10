@@ -20,14 +20,9 @@ class ApiTokenService {
         final Map<String, dynamic> data = json.decode(response.body);
         return data['token'];
       } else {
-        print(
-          'Failed to get custom token. Status code: ${response.statusCode}',
-        );
-        print('Response body: ${response.body}');
         return null;
       }
     } catch (e) {
-      print('Error getting custom token: $e');
       return null;
     }
   }

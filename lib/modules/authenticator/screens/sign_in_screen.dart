@@ -20,7 +20,7 @@ class SignInScreen extends StatelessWidget {
 }
 
 class _SignInScreenContent extends StatefulWidget {
-  const _SignInScreenContent({super.key});
+  const _SignInScreenContent();
 
   @override
   State<_SignInScreenContent> createState() => _SignInScreenContentState();
@@ -30,6 +30,11 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -272,8 +277,6 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                                   );
                                 }
                               } catch (e, stack) {
-                                print('Exception in Google sign-in button: $e');
-                                print('Stack: $stack');
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('App crashed: $e')),
                                 );

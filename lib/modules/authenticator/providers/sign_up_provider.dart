@@ -45,11 +45,8 @@ class SignUpProvider extends ChangeNotifier {
       }
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message;
-      print('Failed with error code: ${e.code}');
-      print(e.message);
     } catch (e) {
       _errorMessage = e.toString();
-      print('Unexpected error: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

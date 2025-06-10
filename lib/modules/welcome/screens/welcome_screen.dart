@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wise_spend_app/core/const/key_sharePre.dart';
+import 'package:wise_spend_app/core/services/share_preferences_service.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -28,19 +30,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_currentPage < _titles.length - 1) {
-        setState(() {
-          _currentPage++;
-        });
-        _pageController.nextPage(
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      } else {
-        timer.cancel();
-      }
-    });
   }
 
   void _nextPage() {
@@ -53,6 +42,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         curve: Curves.easeInOut,
       );
     } else {
+      SharePreferencesService.setString(KeySharepre.keyIsFirstTime, 1);
       Navigator.pushNamed(context, RouterName.lauch);
     }
   }

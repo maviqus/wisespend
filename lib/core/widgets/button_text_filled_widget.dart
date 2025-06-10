@@ -14,6 +14,9 @@ class ButtonTextFilledWidget extends StatefulWidget {
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
   final bool obscureText;
+  final bool enabled;
+  final TextInputType? keyboardType;
+
   const ButtonTextFilledWidget({
     super.key,
     required this.controller,
@@ -28,6 +31,8 @@ class ButtonTextFilledWidget extends StatefulWidget {
     this.validator,
     this.onChanged,
     this.obscureText = false,
+    this.enabled = true,
+    this.keyboardType,
   });
 
   @override
@@ -66,6 +71,8 @@ class _ButtonTextFilledWidgetState extends State<ButtonTextFilledWidget> {
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
               ),
+          enabled: widget.enabled,
+          keyboardType: widget.keyboardType,
           decoration: InputDecoration(
             isCollapsed: true,
             contentPadding: EdgeInsets.symmetric(vertical: 20.h),
