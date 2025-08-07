@@ -1,54 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wise_spend_app/core/widgets/root_navbar.widget.dart';
-import 'package:wise_spend_app/modules/add_expenses/screens/add_expenses_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:wise_spend_app/core/services/firebase_service.dart';
+import 'package:wise_spend_app/core/widgets/date_picker/date_picker_widget.dart';
+import 'package:wise_spend_app/data/providers/category_provider.dart';
+import 'package:wise_spend_app/core/widgets/category_item_widget.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
+import 'package:wise_spend_app/core/widgets/animated_loader.dart';
 
-class CategoriesScreen extends StatelessWidget {
-  final String? icon;
-  final String? label;
+class CategoriesScreen extends StatefulWidget {
+  const CategoriesScreen({
+    super.key,
+    required this.label,
+    required this.categoryId,
+  });
 
-  const CategoriesScreen({super.key, this.icon, this.label});
+  final String label;
+  final String categoryId;
 
   @override
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  @override
   Widget build(BuildContext context) {
-    final expenses = [
-      {
-        'title': 'Dinner',
-        'subtitle': '18:27 - April 30',
-        'amount': '-\$26,00',
-        'month': 'April',
-      },
-      {
-        'title': 'Delivery Pizza',
-        'subtitle': '15:00 - April 24',
-        'amount': '-\$18,35',
-        'month': 'April',
-      },
-      {
-        'title': 'Lunch',
-        'subtitle': '12:30 - April 15',
-        'amount': '-\$15,40',
-        'month': 'April',
-      },
-      {
-        'title': 'Brunch',
-        'subtitle': '9:30 - April 08',
-        'amount': '-\$12,13',
-        'month': 'April',
-      },
-      {
-        'title': 'Dinner',
-        'subtitle': '20:50 - March 31',
-        'amount': '-\$27,20',
-        'month': 'March',
-      },
-    ];
-
-    // du lieu theo tháng
-    final months = expenses.map((e) => e['month']).toSet().toList();
-
     return Scaffold(
       backgroundColor: const Color(0xff00D09E),
       appBar: AppBar(
@@ -56,7 +33,7 @@ class CategoriesScreen extends StatelessWidget {
         elevation: 0,
         leading: BackButton(color: const Color(0xff093030)),
         title: Text(
-          label ?? 'Category',
+          widget.label,
           style: GoogleFonts.poppins(
             fontSize: 24.sp,
             fontWeight: FontWeight.w600,
@@ -65,17 +42,30 @@ class CategoriesScreen extends StatelessWidget {
         ),
         centerTitle: true,
         actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 16.w),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, RouterName.notification);
-              },
-              child: Image.asset(
-                'assets/images/ic_bell.png',
-                width: 32.sp,
-                height: 32.sp,
-                color: const Color(0xff093030),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, RouterName.notification);
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 24.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.notifications_none_outlined,
+                  color: Colors.black87,
+                  size: 24.sp,
+                ),
               ),
             ),
           ),
@@ -83,235 +73,131 @@ class CategoriesScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Container(
-            color: const Color(0xff00D09E),
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Total Balance',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14.sp,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            '\$7,783.00',
-                            style: GoogleFonts.poppins(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 40.h,
-                      color: Colors.white.withOpacity(0.3),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Total Expense',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14.sp,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            '-\$1.187.40',
-                            style: GoogleFonts.poppins(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xff3299FF),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-                // thanh progress
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 4.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xff093030),
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                      child: Text(
-                        '30%',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 8.w),
-                        height: 20.h,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20.r),
-                        ),
-                        child: Stack(
-                          children: [
-                            FractionallySizedBox(
-                              widthFactor: 0.3,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xff00D09E),
-                                  borderRadius: BorderRadius.circular(20.r),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 12.w),
-                                child: Text(
-                                  '\$20,000.00',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14.sp,
-                                    color: const Color(0xff00D09E),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8.h),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.check_box,
-                      color: Color(0xff093030),
-                      size: 18,
-                    ),
-                    SizedBox(width: 6.w),
-                    Text(
-                      '30% Of Your Expenses, Looks Good.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14.sp,
-                        color: const Color(0xff093030),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          // Body
           Expanded(
             child: Container(
-              width: double.infinity,
               decoration: BoxDecoration(
                 color: const Color(0xffF1FFF3),
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(50.r),
-                  topRight: Radius.circular(50.r),
+                  topLeft: Radius.circular(40.r),
+                  topRight: Radius.circular(40.r),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-                child: ListView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final month in months) ...[
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.h, bottom: 8.h),
-                        child: Text(
-                          month!,
-                          style: GoogleFonts.poppins(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xff093030),
-                          ),
-                        ),
+                    // Date
+                    Consumer<CategoryProvider>(
+                      builder: (context, categoryProvider, _) {
+                        return DatePickerWidget(
+                          initialDates: categoryProvider.selectedDate,
+                          callBackFuntion: (dates) {
+                            if (dates.isEmpty) {
+                              categoryProvider.selectedDate = [];
+                              return;
+                            }
+                            final List<DateTime?> selected =
+                                List<DateTime?>.from(
+                                  categoryProvider.selectedDate,
+                                );
+                            if (dates.isNotEmpty && dates[0] != null) {
+                              DateTime tapped = dates[0]!;
+                              final exists = selected.any(
+                                (d) =>
+                                    d != null &&
+                                    d.year == tapped.year &&
+                                    d.month == tapped.month &&
+                                    d.day == tapped.day,
+                              );
+                              if (exists && selected.length == 1) {
+                                categoryProvider.selectedDate = [];
+                              } else if (exists) {
+                                selected.removeWhere(
+                                  (d) =>
+                                      d != null &&
+                                      d.year == tapped.year &&
+                                      d.month == tapped.month &&
+                                      d.day == tapped.day,
+                                );
+                                categoryProvider.selectedDate = selected;
+                              } else {
+                                selected.add(tapped);
+                                categoryProvider.selectedDate = selected;
+                              }
+                            }
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(height: 24.h),
+                    Text(
+                      'Lịch sử chi tiêu',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff093030),
                       ),
-                      ...expenses
-                          .where((e) => e['month'] == month)
-                          .map(
-                            (e) => Padding(
-                              padding: EdgeInsets.only(bottom: 12.h),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 56.w,
-                                    height: 56.w,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xff6DB6FE),
-                                      borderRadius: BorderRadius.circular(16.r),
-                                    ),
-                                    child: Center(
-                                      child: icon != null
-                                          ? Image.asset(
-                                              icon!,
-                                              width: 28.sp,
-                                              height: 28.sp,
-                                              color: const Color(0xffF1FFF3),
-                                            )
-                                          : const SizedBox(),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.w),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          e['title'] as String,
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w500,
-                                            color: const Color(0xff093030),
-                                          ),
-                                        ),
-                                        Text(
-                                          e['subtitle'] as String,
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 13.sp,
-                                            color: const Color(0xff3299FF),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    e['amount'] as String,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xff3299FF),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                    ),
+                    SizedBox(height: 16.h),
+                    Expanded(
+                      child: Consumer<CategoryProvider>(
+                        builder: (context, categoryProvider, child) {
+                          final selectedDate = categoryProvider.selectedDate;
+                          return StreamBuilder(
+                            stream: FirebaseService.getExpensesOfCategory(
+                              widget.categoryId,
+                              date: selectedDate.isEmpty ? null : selectedDate,
                             ),
-                          ),
-                    ],
+                            builder: (context, snapshot) {
+                              final bool isLoading =
+                                  snapshot.connectionState ==
+                                  ConnectionState.waiting;
+
+                              if (snapshot.hasError) {
+                                return Center(
+                                  child: Text('Lỗi: ${snapshot.error}'),
+                                );
+                              }
+
+                              final expenses = snapshot.data?.docs ?? [];
+
+                              return AnimatedLoader(
+                                isLoading: isLoading,
+                                child: expenses.isEmpty
+                                    ? const Center(
+                                        child: Text(
+                                          'Không có khoản chi nào cho danh mục này.',
+                                        ),
+                                      )
+                                    : FadeInWidget(
+                                        child: ListView.builder(
+                                          itemCount: expenses.length,
+                                          itemBuilder: (context, index) {
+                                            final expense = expenses[index]
+                                                .data();
+                                            final expenseId =
+                                                expenses[index].id;
+                                            return CategoryItem(
+                                              expense: expense,
+                                              expenseId: expenseId,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
                     SizedBox(height: 16.h),
                     Center(
                       child: ElevatedButton(
@@ -326,15 +212,14 @@ class CategoriesScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                              builder: (_) => const AddExpenseScreen(),
-                            ),
+                            RouterName.addExpenses,
+                            arguments: widget.categoryId,
                           );
                         },
                         child: Text(
-                          'Add Expenses',
+                          'Thêm khoản chi',
                           style: GoogleFonts.poppins(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
@@ -350,7 +235,17 @@ class CategoriesScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: RootNavBar(currentIndex: 3),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(
+            context,
+            RouterName.addExpenses,
+            arguments: widget.categoryId,
+          );
+        },
+        backgroundColor: const Color(0xff00D09E),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 }

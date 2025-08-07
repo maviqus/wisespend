@@ -36,6 +36,10 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  // Add state variables to track password visibility
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,7 +149,21 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                           fontWeight: FontWeight.w400,
                           color: const Color(0xff093030),
                         ),
-                        isPasswordField: true,
+                        // Replace isPasswordField with obscureText and add suffix icon
+                        obscureText: _obscurePassword,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: const Color(0xff093030),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Hãy nhập mật khẩu của bạn';
@@ -176,7 +194,22 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                           fontWeight: FontWeight.w400,
                           color: const Color(0xff093030),
                         ),
-                        isPasswordField: true,
+                        // Replace isPasswordField with obscureText and add suffix icon
+                        obscureText: _obscureConfirmPassword,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: const Color(0xff093030),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
+                            });
+                          },
+                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Hãy xác nhận mật khẩu của bạn';

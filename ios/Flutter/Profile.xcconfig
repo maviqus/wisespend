@@ -1,0 +1,7 @@
+#include "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
+// This is a generated file; do not edit or check into version control.
+#include "Generated.xcconfig"
+
+FLUTTER_BUILD_DIR=build
+SYMROOT=${SOURCE_ROOT}/../build/ios
+FLUTTER_TARGET=lib/main.dart

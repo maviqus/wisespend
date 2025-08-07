@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+
+echo "🔧 Fixing xcconfig includes..."
+
+# Thêm dòng include vào đầu mỗi file nếu chưa có
+add_include_if_missing() {
+  local file=$1
+  local include=$2
+  if ! grep -q "$include" "$file"; then
+    echo "✅ Adding include to $file"
+    sed -i '' "1s;^;#include \"$include\"\n;" "$file"
+  else
+    echo "✔️  Include already exists in $file"
+  fi
+}
+
+cd ios || { echo "❌ ios directory not found"; exit 1; }
+
+add_include_if_missing Flutter/Debug.xcconfig "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+add_include_if_missing Flutter/Release.xcconfig "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+add_include_if_missing Flutter/Profile.xcconfig "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
+
+echo "🧹 Cleaning old Pods..."
+rm -rf Pods Podfile.lock
+
+echo "📦 Installing pods..."
+pod install
+
+cd ..
+
+echo "📦 Running flutter pub get..."
+flutter pub get
+
+echo "✅ Done! Ready to build 🎉"
+
+

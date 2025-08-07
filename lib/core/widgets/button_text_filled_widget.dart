@@ -23,7 +23,7 @@ class ButtonTextFilledWidget extends StatefulWidget {
     required this.hintText,
     this.prefixIcon,
     this.suffixIcon,
-    this.isPasswordField = false,
+    this.isPasswordField = false, // Changed from true to false
     this.fillColor = const Color(0xff1F222A),
     this.borderRadius = 12,
     this.textStyle,
@@ -45,7 +45,8 @@ class _ButtonTextFilledWidgetState extends State<ButtonTextFilledWidget> {
   @override
   void initState() {
     super.initState();
-    _obscureText = widget.obscureText;
+    // Set initial obscure state based on widget properties
+    _obscureText = widget.isPasswordField ? true : widget.obscureText;
   }
 
   @override
@@ -61,7 +62,9 @@ class _ButtonTextFilledWidgetState extends State<ButtonTextFilledWidget> {
         child: TextFormField(
           controller: widget.controller,
           validator: widget.validator,
-          obscureText: _obscureText,
+          obscureText: widget.isPasswordField
+              ? _obscureText
+              : widget.obscureText,
           obscuringCharacter: '•',
           cursorColor: const Color(0xffFFFFFF),
           style:

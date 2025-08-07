@@ -15,82 +15,143 @@ class RecoverPasswordScreen extends StatefulWidget {
 }
 
 class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
-  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('New Password')),
-      body: Padding(
-        padding: EdgeInsets.all(20.w),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Text(
-                'New Password',
-                style: GoogleFonts.poppins(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 30.h),
-              ButtonTextFilledWidget(
-                controller: _newPasswordController,
-                hintText: 'New Password',
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter new password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20.h),
-              ButtonTextFilledWidget(
-                controller: _confirmPasswordController,
-                hintText: 'Confirm New Password',
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm new password';
-                  }
-                  if (value != _newPasswordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20.h),
-              Consumer<ForgotPasswordProvider>(
-                builder: (context, forgotPasswordProvider, _) {
-                  return ButtonTextWidget(
-                    text: 'Change Password',
-                    color: const Color(0xff00D09E),
-                    radius: 30.r,
-                    onTap: () async {
-                      if (_formKey.currentState!.validate()) {
-                        _newPasswordController.text.trim();
-
-                        Navigator.pushReplacementNamed(
-                          context,
-                          RouterName.signin,
-                        );
-                      }
-                    },
-                  );
-                },
-              ),
-            ],
+      appBar: AppBar(
+        title: Text(
+          'Khôi phục mật khẩu',
+          style: GoogleFonts.poppins(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w600,
           ),
         ),
+        backgroundColor: const Color(0xff00D09E),
+      ),
+      body: Consumer<ForgotPasswordProvider>(
+        builder: (context, forgotPasswordProvider, _) {
+          return Padding(
+            padding: EdgeInsets.all(24.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Nhập mật khẩu mới',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+
+                Text(
+                  'Mật khẩu mới',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                ButtonTextFilledWidget(
+                  controller: _passwordController,
+                  hintText: 'Nhập mật khẩu mới',
+                  fillColor: const Color(0xFFE6F7EE),
+                  borderRadius: 16,
+                  obscureText: _obscurePassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                Text(
+                  'Xác nhận mật khẩu',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                ButtonTextFilledWidget(
+                  controller: _confirmPasswordController,
+                  hintText: 'Nhập lại mật khẩu mới',
+                  fillColor: const Color(0xFFE6F7EE),
+                  borderRadius: 16,
+                  obscureText: _obscureConfirmPassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                ButtonTextWidget(
+                  text: 'Xác nhận',
+                  color: const Color(0xff00D09E),
+                  radius: 24,
+                  onTap: () {
+                    if (_passwordController.text.isEmpty ||
+                        _confirmPasswordController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Vui lòng nhập đầy đủ thông tin'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (_passwordController.text !=
+                        _confirmPasswordController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Mật khẩu xác nhận không khớp'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      RouterName.signin,
+                      (route) => false,
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 }

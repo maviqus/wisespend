@@ -15,11 +15,10 @@ class ForgotPasswordProvider extends ChangeNotifier {
 
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      print('Password reset email sent to $email');
-    } catch (e, stack) {
+    } on FirebaseAuthException catch (e) {
+      _errorMessage = e.message;
+    } catch (e) {
       _errorMessage = e.toString();
-      print('Error sending reset email: $e');
-      print('Stack: $stack');
     } finally {
       _isLoading = false;
       notifyListeners();

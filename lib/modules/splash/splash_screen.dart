@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wise_spend_app/core/const/key_sharePre.dart';
-import 'package:wise_spend_app/core/services/share_preferences_service.dart';
+import 'package:wise_spend_app/core/const/key_share_pref.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,8 +24,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigate() async {
     // ktra da dang nhap
     final prefs = await SharedPreferences.getInstance();
-    final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-    if (isLoggedIn) {
+    final isLoggedIn = prefs.getString(KeySharePref.keyTokenUser) ?? '';
+    if (isLoggedIn.isNotEmpty) {
       // da dangnhap => home
       Timer(const Duration(seconds: 1), () {
         Navigator.pushReplacementNamed(context, RouterName.home);
@@ -33,36 +33,36 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    // chua =>
-    String? isFirstString = SharePreferencesService.getString(
-      KeySharepre.keyIsFirstTime,
-    );
-    Timer(const Duration(seconds: 1), () {
-      if (isFirstString != null && isFirstString == '1') {
-        Navigator.pushReplacementNamed(context, RouterName.lauch);
-      } else {
-        Navigator.pushReplacementNamed(context, RouterName.welcome);
-      }
+    // chua dang nhap => signin
+    Timer(const Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, RouterName.signin);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff00D09E),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(child: Image.asset('assets/images/logo.png')),
-          Text(
-            'WiseSpend',
-            style: GoogleFonts.poppins(
-              fontSize: 52.14,
-              fontWeight: FontWeight.bold,
-              color: Color(0xffFFFFFF),
+      backgroundColor: const Color(0xff00D09E),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Wise Spend',
+              style: GoogleFonts.poppins(
+                fontSize: 32.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 20.h),
+            CircularProgressIndicator(color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
+}
       ),
     );
   }

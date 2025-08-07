@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:wise_spend_app/data/services/api_token_service.dart'; // Import ApiTokenService
-import 'package:wise_spend_app/modules/authenticator/services/sign_in_service.dart'; // Import SignInService
+import 'package:wise_spend_app/core/services/firebase_service.dart';
 
 class SignUpProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -9,11 +8,6 @@ class SignUpProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-
-  final ApiTokenService apiTokenService = ApiTokenService(
-    baseUrl: 'https://us-central1-wisespend-ae50c.cloudfunctions.net',
-  );
-  final SignInService signInService = SignInService();
 
   Future<void> signUpWithEmailAndPassword(String email, String password) async {
     _isLoading = true;
@@ -30,18 +24,13 @@ class SignUpProvider extends ChangeNotifier {
 
       if (userCredential.user != null) {
         // custom token
-        final String? customToken = await apiTokenService.getCustomToken(
-          userCredential.user!.uid,
-        );
-
-        if (customToken != null) {
-          // 3. Sign in  custom token
-          await signInService.signInWithCustomToken(customToken);
-        } else {
-          _errorMessage = 'Dang nhap khong thanh cong';
-        }
+        final userInfo = {
+          "displayName": userCredential.user!.displayName,
+          "email": userCredential.user!.email,
+        };
+        await FirebaseService.createUser(userCredential.user!.uid, userInfo);
       } else {
-        _errorMessage = ' Loi dang nhap';
+        _errorMessage = 'Lỗi đăng ký';
       }
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message;
@@ -52,4 +41,13 @@ class SignUpProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> signUp(BuildContext context) async {}
+}
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> signUp(BuildContext context) async {}
 }

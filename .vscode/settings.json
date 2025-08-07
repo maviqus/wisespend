@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "__locale": "cpp"
+    },
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false,
+        "dart": true
+    },
+    "github.copilot.inlineSuggest.enable": true,
+    "dart.vmArgs": "-Xmx4096m"
+}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wise_spend_app/core/const/key_share_pref.dart';
 import 'package:wise_spend_app/core/widgets/button_text_widget.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
 
@@ -22,12 +23,29 @@ class _LauchSceenState extends State<LauchSceen> {
   Future<void> _checkFirstLaunch() async {
     final prefs = await SharedPreferences.getInstance();
     bool isFirstLaunch = prefs.getBool('first_launch') ?? true;
+    final token = prefs.getString(KeySharePref.keyTokenUser);
 
     if (isFirstLaunch) {
       await prefs.setBool('first_launch', false);
-    } else {
-      Navigator.pushReplacementNamed(context, RouterName.signin);
     }
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (token != null) {
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          RouterName.home,
+          (route) => false,
+        );
+      } else {
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          RouterName.signin,
+          (route) => false,
+        );
+      }
+    });
   }
 
   @override

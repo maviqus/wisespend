@@ -2,23 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 import 'package:wise_spend_app/core/widgets/button_text_filled_widget.dart';
 import 'package:wise_spend_app/core/widgets/button_text_widget.dart';
-import 'package:wise_spend_app/core/widgets/show_message_widget.dart';
 import 'package:wise_spend_app/modules/authenticator/providers/forgot_password_provider.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  Widget build(BuildContext context) {
+    // Get the app-level provider instead of creating a new one
+    Provider.of<ForgotPasswordProvider>(context, listen: false);
+
+    return _ForgotPasswordContent();
+  }
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ForgotPasswordContent extends StatefulWidget {
+  const _ForgotPasswordContent();
+
+  @override
+  State<_ForgotPasswordContent> createState() => _ForgotPasswordContentState();
+}
+
+class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
   final TextEditingController _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +44,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         children: [
           SizedBox(height: 100.h),
           Text(
-            'Forgot Password',
+            'Reset Password',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 30.sp,
@@ -47,7 +63,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   topRight: Radius.circular(50.r),
                 ),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 34.w, vertical: 90.h),
+              padding: EdgeInsets.symmetric(horizontal: 36.w),
               child: SingleChildScrollView(
                 child: Form(
                   key: _formKey,
@@ -55,25 +71,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      SizedBox(height: 50.h),
                       Text(
-                        'Quên mật khẩu?',
+                        'Please enter your registered email address to receive password reset instructions',
                         style: GoogleFonts.poppins(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        'Đừng lo, chúng tôi sẽ giúp bạn đặt lại mật khẩu ngay.',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          fontSize: 13.sp,
+                          fontSize: 15.sp,
                           fontWeight: FontWeight.w400,
+                          color: const Color(0xff093030),
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 82.h),
+                      SizedBox(height: 32.h),
                       Text(
-                        'Nhập email của bạn',
+                        'Email',
                         style: GoogleFonts.poppins(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -95,56 +105,47 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
-                          if (!value.contains('@')) {
+                          if (!RegExp(
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          ).hasMatch(value)) {
                             return 'Please enter a valid email';
                           }
                           return null;
                         },
                       ),
-                      SizedBox(height: 45.h),
+                      SizedBox(height: 40.h),
                       Consumer<ForgotPasswordProvider>(
-                        builder: (context, forgotPasswordProvider, _) {
+                        builder: (context, provider, _) {
                           return Center(
-                            child: forgotPasswordProvider.isLoading
+                            child: provider.isLoading
                                 ? const CircularProgressIndicator()
                                 : ButtonTextWidget(
-                                    text: 'Next Step',
+                                    text: 'Send Instructions',
                                     color: const Color(0xff00D09E),
                                     width: 207.w,
                                     height: 45.h,
                                     radius: 30.r,
                                     onTap: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        final email = _emailController.text
-                                            .trim();
-                                        await forgotPasswordProvider
-                                            .sendPasswordResetEmail(email);
-                                        if (forgotPasswordProvider
-                                                .errorMessage ==
-                                            null) {
-                                          ShowMessage(
-                                            context: context,
-                                            title:
-                                                'Email đặt lại mật khẩu đã được gửi, hãy check mail nhé.',
-                                            type: ToastificationType.success,
-                                            alignment: Alignment.bottomCenter,
-                                            duration: const Duration(
-                                              seconds: 5,
-                                            ),
-                                          );
-                                          Navigator.pushReplacementNamed(
+                                        await provider.sendPasswordResetEmail(
+                                          _emailController.text.trim(),
+                                        );
+
+                                        if (!context.mounted) return;
+
+                                        if (provider.errorMessage == null) {
+                                          Navigator.pushNamed(
                                             context,
-                                            RouterName.signin,
+                                            RouterName.recoverPassword,
                                           );
                                         } else {
-                                          ShowMessage(
-                                            context: context,
-                                            title:
-                                                'Failed to send reset email: ${forgotPasswordProvider.errorMessage}',
-                                            type: ToastificationType.error,
-                                            alignment: Alignment.bottomCenter,
-                                            duration: const Duration(
-                                              seconds: 5,
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Error: ${provider.errorMessage}',
+                                              ),
                                             ),
                                           );
                                         }
@@ -161,48 +162,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       SizedBox(height: 20.h),
                       Center(
-                        child: ButtonTextWidget(
-                          text: 'Sign Up',
-                          color: const Color(0xffDFF7E2),
-                          width: 207.w,
-                          height: 45.h,
-                          radius: 30.r,
-                          onTap: () {
-                            Navigator.pushNamed(context, RouterName.signup);
-                          },
-                          textStyle: GoogleFonts.poppins(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xff093030),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Don't have an account?",
-                            style: GoogleFonts.leagueSpartan(
-                              fontSize: 13.sp,
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            'Back to Login',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.w500,
                               color: const Color(0xff093030),
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, RouterName.signup);
-                            },
-                            child: Text(
-                              'Sign Up',
-                              style: GoogleFonts.leagueSpartan(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xff3299FF),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),

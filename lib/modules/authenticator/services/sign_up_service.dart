@@ -14,7 +14,7 @@ class SignUpService {
             password: password.trim(),
           );
       return userCredential;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       return null;
     } catch (e) {
       return null;

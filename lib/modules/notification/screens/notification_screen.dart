@@ -1,79 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:wise_spend_app/core/widgets/root_navbar.widget.dart';
+import 'package:wise_spend_app/data/providers/notification_provider.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final notifications = [
-      {
-        'title': 'Reminder!',
-        'description':
-            'Set up your automatic savings to meet your savings goal...',
-        'time': '17:00 - April 24',
-        'date': 'Today',
-        'icon': Icons.notifications,
-      },
-      {
-        'title': 'New Update',
-        'description':
-            'Set up your automatic savings to meet your savings goal...',
-        'time': '17:00 - April 24',
-        'date': 'Today',
-        'icon': Icons.update,
-      },
-      {
-        'title': 'Transactions',
-        'description': 'A new transaction has been registered',
-        'time': '17:00 - April 24',
-        'date': 'Yesterday',
-        'icon': Icons.attach_money,
-      },
-      {
-        'title': 'Reminder!',
-        'description':
-            'Set up your automatic savings to meet your savings goal...',
-        'time': '17:00 - April 24',
-        'date': 'Yesterday',
-        'icon': Icons.notifications,
-      },
-      {
-        'title': 'Expense Record',
-        'description':
-            'We recommend that you be more attentive to your finances.',
-        'time': '17:00 - April 24',
-        'date': 'This Weekend',
-        'icon': Icons.trending_down,
-      },
-      {
-        'title': 'Transactions',
-        'description': 'A new transaction has been registered',
-        'time': '17:00 - April 24',
-        'date': 'This Weekend',
-        'icon': Icons.attach_money,
-      },
-    ];
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
 
-    final groupedNotifications = {};
-    for (var notification in notifications) {
-      final date = notification['date'];
-      if (!groupedNotifications.containsKey(date)) {
-        groupedNotifications[date] = [];
-      }
-      groupedNotifications[date].add(notification);
+class _NotificationScreenState extends State<NotificationScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<NotificationProvider>(
+        context,
+        listen: false,
+      ).loadNotifications();
+    });
+  }
+
+  IconData _getIconData(String? iconName) {
+    switch (iconName) {
+      case 'notifications':
+        return Icons.notifications;
+      case 'warning':
+        return Icons.warning;
+      case 'info':
+        return Icons.info;
+      default:
+        return Icons.info_outline;
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff00D09E),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: BackButton(color: const Color(0xff093030)),
+        leading: const BackButton(color: Color(0xff093030)),
         title: Text(
-          'Notification',
+          'Notifications',
           style: GoogleFonts.poppins(
             fontSize: 24.sp,
             fontWeight: FontWeight.w600,
@@ -103,60 +76,104 @@ class NotificationScreen extends StatelessWidget {
           ),
         ),
         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-        child: ListView(
-          children: [
-            for (var date in groupedNotifications.keys) ...[
-              Text(
-                date,
-                style: GoogleFonts.poppins(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xff093030),
-                ),
-              ),
-              SizedBox(height: 12.h),
-              for (var notification in groupedNotifications[date]) ...[
-                ListTile(
-                  leading: Icon(
-                    notification['icon'] as IconData,
-                    color: const Color(0xff00D09E),
-                    size: 32.sp,
-                  ),
-                  title: Text(
-                    notification['title'],
-                    style: GoogleFonts.poppins(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xff093030),
+        child: Consumer<NotificationProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (provider.error != null) {
+              return Center(child: Text('Error: ${provider.error}'));
+            }
+
+            final groupedNotifications = provider.groupedNotifications;
+            if (groupedNotifications.isEmpty) {
+              return const Center(child: Text('No notifications available'));
+            }
+
+            return ListView.builder(
+              itemCount: groupedNotifications.length,
+              itemBuilder: (context, index) {
+                final date = groupedNotifications.keys.toList()[index];
+                final notificationsForDate = groupedNotifications[date] ?? [];
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      date,
+                      style: GoogleFonts.poppins(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff093030),
+                      ),
                     ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        notification['description'],
-                        style: GoogleFonts.poppins(
-                          fontSize: 14.sp,
-                          color: const Color(0xff093030),
-                        ),
+                    SizedBox(height: 12.h),
+                    ...notificationsForDate.map(
+                      (notification) => NotificationItem(
+                        notification: notification,
+                        getIconData: _getIconData,
                       ),
-                      Text(
-                        notification['time'],
-                        style: GoogleFonts.poppins(
-                          fontSize: 12.sp,
-                          color: const Color(0xff00D09E),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(color: Colors.grey.shade300, thickness: 1),
-              ],
-            ],
-          ],
+                    ),
+                    Divider(color: Colors.grey.shade300, thickness: 1),
+                  ],
+                );
+              },
+            );
+          },
         ),
       ),
-      bottomNavigationBar: RootNavBar(currentIndex: 0),
+      bottomNavigationBar: const RootNavBar(currentIndex: 0),
+    );
+  }
+}
+
+class NotificationItem extends StatelessWidget {
+  const NotificationItem({
+    super.key,
+    required this.notification,
+    required this.getIconData,
+  });
+
+  final Map<String, dynamic> notification;
+  final IconData Function(String?) getIconData;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(
+        getIconData(notification['icon'] as String?),
+        color: const Color(0xff00D09E),
+        size: 32.sp,
+      ),
+      title: Text(
+        notification['title'] as String? ?? 'No Title',
+        style: GoogleFonts.poppins(
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w500,
+          color: const Color(0xff093030),
+        ),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            notification['description'] as String? ?? 'No Description',
+            style: GoogleFonts.poppins(
+              fontSize: 14.sp,
+              color: const Color(0xff093030),
+            ),
+          ),
+          Text(
+            notification['time'] as String? ?? 'No Time',
+            style: GoogleFonts.poppins(
+              fontSize: 12.sp,
+              color: const Color(0xff00D09E),
+            ),
+          ),
+        ],
+      ),
+      onTap: () {},
     );
   }
 }

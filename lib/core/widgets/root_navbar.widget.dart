@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wise_spend_app/core/widgets/bottom_nav_icon_widget.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
 
 class RootNavBar extends StatelessWidget {
@@ -10,53 +9,92 @@ class RootNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      {
-        'asset': 'assets/images/ic_home.png',
-        'onTap': () => Navigator.pushReplacementNamed(context, RouterName.home),
-      },
-      {
-        'asset': 'assets/images/ic_analysis.png',
-        'onTap': () =>
-            Navigator.pushReplacementNamed(context, RouterName.analysis),
-      },
-      {
-        'asset': 'assets/images/ic_transaction.png',
-        'onTap': () =>
-            Navigator.pushReplacementNamed(context, RouterName.transaction),
-      },
-      {
-        'asset': 'assets/images/ic_layers.png',
-        'onTap': () =>
-            Navigator.pushReplacementNamed(context, RouterName.categories),
-      },
-      {
-        'asset': 'assets/images/ic_profile.png',
-        'onTap': () =>
-            Navigator.pushReplacementNamed(context, RouterName.profile),
-      },
-    ];
-
     return Container(
-      decoration: BoxDecoration(color: Color(0xffF1FFF3)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xffDFF7E2),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(50),
-            topRight: Radius.circular(50),
+      height: 76.h,
+      decoration: BoxDecoration(
+        color: Color(0xffDFF7E2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            offset: const Offset(0, -1),
+            blurRadius: 10,
           ),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(items.length, (i) {
-            return BottomNavIcon(
-              asset: items[i]['asset'] as String,
-              isActive: i == currentIndex,
-              onTap: items[i]['onTap'] as VoidCallback,
-            );
-          }),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(
+            context,
+            index: 0,
+            icon: Icons.home_outlined,
+            activeIcon: Icons.home,
+            route: RouterName.home,
+          ),
+          _buildNavItem(
+            context,
+            index: 1,
+            icon: Icons.bar_chart_outlined,
+            activeIcon: Icons.bar_chart,
+            route: RouterName.analysis,
+          ),
+          _buildNavItem(
+            context,
+            index: 2,
+            icon: Icons.account_balance_wallet_outlined,
+            activeIcon: Icons.account_balance_wallet,
+            route: RouterName.transaction,
+          ),
+          _buildNavItem(
+            context,
+            index: 3,
+            icon: Icons.add_circle_outline,
+            activeIcon: Icons.add_circle,
+            route: RouterName.addExpenses,
+          ),
+          _buildNavItem(
+            context,
+            index: 4,
+            icon: Icons.person_outline,
+            activeIcon: Icons.person,
+            route: RouterName.profile,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    BuildContext context, {
+    required int index,
+    required IconData icon,
+    required IconData activeIcon,
+    required String route,
+  }) {
+    final bool isActive = index == currentIndex;
+
+    return InkWell(
+      onTap: () {
+        if (index != currentIndex) {
+          Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
+        }
+      },
+      child: SizedBox(
+        width: 70.w,
+        child: Center(
+          child: Container(
+            width: 48.w,
+            height: 48.w,
+            decoration: BoxDecoration(
+              color: isActive ? const Color(0xff00D09E) : Colors.transparent,
+              borderRadius: BorderRadius.circular(24.r), // More rounded corners
+            ),
+            child: Icon(
+              isActive ? activeIcon : icon,
+              color: isActive ? Colors.white : Colors.grey,
+              size: 24.sp,
+            ),
+          ),
         ),
       ),
     );

@@ -34,6 +34,21 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
   @override
   void initState() {
     super.initState();
+
+    // Reset controllers when screen initializes to ensure fresh login
+    usernameController.clear();
+    passwordController.clear();
+
+    // Reset the provider state when the sign in screen is shown
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final signInProvider = Provider.of<SignInProvider>(
+          context,
+          listen: false,
+        );
+        signInProvider.resetState();
+      }
+    });
   }
 
   @override
@@ -73,7 +88,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                     children: [
                       SizedBox(height: 50.h),
                       Text(
-                        'Username or Email',
+                        'Email của bạn',
                         style: GoogleFonts.poppins(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -139,37 +154,27 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                             child: signInProvider.isLoading
                                 ? const CircularProgressIndicator()
                                 : ButtonTextWidget(
-                                    text: 'Log In',
+                                    text: 'Sign In',
                                     color: const Color(0xff00D09E),
                                     width: 207.w,
                                     height: 45.h,
                                     radius: 30.r,
-                                    onTap: () {
+                                    onTap: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        signInProvider
-                                            .signInWithEmailAndPassword(
-                                              usernameController.text.trim(),
-                                              passwordController.text.trim(),
-                                            )
-                                            .then((_) {
-                                              if (signInProvider.errorMessage ==
-                                                  null) {
-                                                Navigator.pushReplacementNamed(
-                                                  context,
-                                                  RouterName.home,
-                                                );
-                                              } else {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      'Đăng nhập thất bại: ${signInProvider.errorMessage}',
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            });
+                                        await signInProvider.signInWithEmailAndPassword(
+                                          usernameController.text.trim(),
+                                          passwordController.text.trim(),
+                                        );
+                                        
+                                        if (!mounted) return;
+                                        
+                                        if (signInProvider.isSignedIn) {
+                                          Navigator.pushNamedAndRemoveUntil(
+                                            context,
+                                            RouterName.home,
+                                            (route) => false,
+                                          );
+                                        }
                                       }
                                     },
                                     textStyle: GoogleFonts.poppins(
@@ -185,6 +190,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                       Center(
                         child: TextButton(
                           onPressed: () {
+                            // Navigate to forgot password screen without depending on ForgotPasswordProvider
                             Navigator.pushNamed(
                               context,
                               RouterName.forgotPassword,
@@ -222,74 +228,6 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              Provider.of<SignInProvider>(
-                                context,
-                                listen: false,
-                              ).signInWithFacebook().then((_) {
-                                if (Provider.of<SignInProvider>(
-                                      context,
-                                      listen: false,
-                                    ).errorMessage ==
-                                    null) {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    RouterName.home,
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Facebook sign-in failed: ${Provider.of<SignInProvider>(context, listen: false).errorMessage}',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              });
-                            },
-                            icon: const Icon(Icons.facebook),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              try {
-                                await Provider.of<SignInProvider>(
-                                  context,
-                                  listen: false,
-                                ).signInWithGoogle();
-                                if (!mounted) return;
-                                final error = Provider.of<SignInProvider>(
-                                  context,
-                                  listen: false,
-                                ).errorMessage;
-                                if (error == null) {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    RouterName.home,
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Google sign-in failed: $error',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              } catch (e, stack) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('App crashed: $e')),
-                                );
-                              }
-                            },
-                            icon: const Icon(Icons.g_mobiledata),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
                           Text(
                             "Don't have an account?",
                             style: GoogleFonts.leagueSpartan(
@@ -298,6 +236,32 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                               color: const Color(0xff093030),
                             ),
                           ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, RouterName.signup);
+                            },
+                            child: Text(
+                              'Sign Up',
+                              style: GoogleFonts.leagueSpartan(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xff3299FF),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
                           TextButton(
                             onPressed: () {
                               Navigator.pushNamed(context, RouterName.signup);

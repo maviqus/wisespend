@@ -7,7 +7,7 @@ class SignInService {
     try {
       UserCredential userCredential = await _auth.signInWithCustomToken(token);
       return userCredential;
-    } catch (e, stack) {
+    } catch (e) {
       return null;
     }
   }
