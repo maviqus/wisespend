@@ -5,7 +5,7 @@ import 'package:wise_spend_app/core/services/share_preferences_service.dart';
 class FirebaseService {
   static late FirebaseFirestore firebaseFirestore;
 
-  static Future<void> int() async {
+  static Future<void> init() async {
     firebaseFirestore = FirebaseFirestore.instance;
   }
 

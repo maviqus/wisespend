@@ -32,14 +32,8 @@ class SignInProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // First ensure we're starting with a clean slate
-      // Check if there's any existing user and sign them out
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        await FirebaseAuth.instance.signOut();
-      }
-
-      // Now proceed with sign in
+      // We don't need to sign out existing users - Firebase handles this automatically
+      // Just proceed with sign in
       final UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
             email: email.trim(),
@@ -50,35 +44,20 @@ class SignInProvider extends ChangeNotifier {
         // Save login state
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(KeySharePref.keyTokenUser, "dummy_token");
-        await prefs.setString(
-          KeySharePref.keyUserId,
-          userCredential.user!.uid,
-        );
+        await prefs.setString(KeySharePref.keyUserId, userCredential.user!.uid);
+
+        // Print debug info
+        print("✅ Login successful for user: ${userCredential.user!.uid}");
       } else {
         _errorMessage = 'Đăng nhập thất bại';
+        print("❌ Login failed: user is null after authentication");
       }
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message;
+      print("❌ Firebase Auth Error: ${e.message}");
     } catch (e) {
       _errorMessage = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-}
-            userCredential.user!.uid,
-          );
-        } else {
-          _errorMessage = 'Failed to get custom token';
-        }
-      } else {
-        _errorMessage = 'Invalid credentials';
-      }
-    } on FirebaseAuthException catch (e) {
-      _errorMessage = e.message;
-    } catch (e) {
-      _errorMessage = e.toString();
+      print("❌ General Error: ${e.toString()}");
     } finally {
       _isLoading = false;
       notifyListeners();

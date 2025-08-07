@@ -240,6 +240,8 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                                               passwordController.text.trim(),
                                             )
                                             .then((_) {
+                                              if (!mounted) return;
+
                                               if (signUpProvider.errorMessage ==
                                                   null) {
                                                 ShowMessage(
@@ -255,11 +257,14 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                                                     seconds: 3,
                                                   ),
                                                 );
+
+                                                if (!mounted) return;
                                                 Navigator.pushReplacementNamed(
                                                   context,
                                                   RouterName.signin,
                                                 );
                                               } else {
+                                                if (!mounted) return;
                                                 ShowMessage(
                                                   context: context,
                                                   title: "Sign Up Failed",

@@ -325,12 +325,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     Navigator.pushReplacementNamed(context, RouterName.home);
                   }
                 } else {
-                  if (!mounted) return; // Add mounted check here
-                  NotificationWidget.show(
-                    context,
-                    'Vui lòng chọn danh mục',
-                    type: NotificationType.error,
-                  );
+                  if (mounted) {
+                    NotificationWidget.show(
+                      context,
+                      'Vui lòng chọn danh mục',
+                      type: NotificationType.error,
+                    );
+                  }
                 }
               },
               height: 56.h,

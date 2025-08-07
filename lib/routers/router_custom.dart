@@ -50,7 +50,7 @@ class RouterCustom {
         return MaterialPageRoute(builder: (_) => const NotificationScreen());
       case RouterName.profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
-      case RouterName.launch:
+      case RouterName.lauch:
         return MaterialPageRoute(builder: (_) => const LauchSceen());
       case RouterName.analysis:
         return MaterialPageRoute(builder: (_) => const AnalysisScreen());
@@ -58,27 +58,6 @@ class RouterCustom {
         return MaterialPageRoute(builder: (_) => const TransactionScreen());
       default:
         return MaterialPageRoute(builder: (_) => const ErrorScreen());
-    }
-  }
-}
-      case RouterName.signup:
-        return FadePageRoute(child: const SignUpScreen(), settings: settings);
-      case RouterName.forgotPassword:
-        return FadePageRoute(
-          child: const ForgotPasswordScreen(),
-          settings: settings,
-        );
-      case RouterName.recoverPassword:
-        return FadePageRoute(
-          child: const RecoverPasswordScreen(),
-          settings: settings,
-        );
-      case RouterName.lauch:
-        return FadePageRoute(child: const LauchSceen(), settings: settings);
-      case RouterName.editProfile:
-        return MaterialPageRoute(builder: (_) => EditProfileScreen());
-      default:
-        return FadePageRoute(child: const ErrorScreen(), settings: settings);
     }
   }
 }

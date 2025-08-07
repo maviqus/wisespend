@@ -126,7 +126,7 @@ class FinanceSummaryCard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1), // Changed from withOpacity
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Icon(icon, color: color, size: 22.sp),

@@ -105,18 +105,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Cập nhật hồ sơ thành công'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Cập nhật hồ sơ thành công'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
 
       // Wait a bit to ensure everything is updated
       await Future.delayed(Duration(milliseconds: 500));
 
       // Navigate back with success flag
-      Navigator.pop(context, true);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

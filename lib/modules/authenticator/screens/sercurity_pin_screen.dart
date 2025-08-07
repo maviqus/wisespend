@@ -180,4 +180,3 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
     );
   }
 }
-}

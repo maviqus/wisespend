@@ -19,27 +19,16 @@ class RemoveProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      await FirebaseService.removeExpenseFromCategory(categoryId, transactionId);
+      await FirebaseService.removeExpenseFromCategory(
+        categoryId,
+        transactionId,
+      );
       if (!context.mounted) return;
       Provider.of<TotalProvider>(context, listen: false).listenTotalAll();
       NotificationWidget.show(
         context,
         'Đã xóa khoản chi',
         type: NotificationType.success,
-      );
-    } catch (e) {
-      _error = e.toString();
-      if (!context.mounted) return;
-      NotificationWidget.show(context, _error!, type: NotificationType.error);
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-}
-        context,
-        'Đã xóa khoản chi',
-        type = NotificationType.success,
       );
     } catch (e) {
       _error = e.toString();

@@ -44,10 +44,3 @@ class SignUpProvider extends ChangeNotifier {
 
   Future<void> signUp(BuildContext context) async {}
 }
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> signUp(BuildContext context) async {}
-}

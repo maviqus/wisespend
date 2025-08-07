@@ -12,10 +12,8 @@ class SignInScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => SignInProvider(),
-      child: const _SignInScreenContent(),
-    );
+    // Use the existing provider from the parent
+    return const _SignInScreenContent();
   }
 }
 
@@ -161,18 +159,53 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                                     radius: 30.r,
                                     onTap: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        await signInProvider.signInWithEmailAndPassword(
-                                          usernameController.text.trim(),
-                                          passwordController.text.trim(),
-                                        );
-                                        
-                                        if (!mounted) return;
-                                        
-                                        if (signInProvider.isSignedIn) {
-                                          Navigator.pushNamedAndRemoveUntil(
+                                        try {
+                                          await signInProvider
+                                              .signInWithEmailAndPassword(
+                                                usernameController.text.trim(),
+                                                passwordController.text.trim(),
+                                              );
+
+                                          if (!mounted) return;
+
+                                          // Check if there's an error message
+                                          if (signInProvider.errorMessage !=
+                                              null) {
+                                            // Show error message in a snackbar
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  signInProvider.errorMessage!,
+                                                ),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                          } else if (signInProvider
+                                              .isSignedIn) {
+                                            print(
+                                              "🔄 Navigating to home screen",
+                                            );
+                                            Navigator.pushNamedAndRemoveUntil(
+                                              context,
+                                              RouterName.home,
+                                              (route) => false,
+                                            );
+                                          }
+                                        } catch (e) {
+                                          print(
+                                            "❌ Error in sign in button: ${e.toString()}",
+                                          );
+                                          ScaffoldMessenger.of(
                                             context,
-                                            RouterName.home,
-                                            (route) => false,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                "Error: ${e.toString()}",
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
                                           );
                                         }
                                       }
@@ -236,32 +269,6 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                               color: const Color(0xff093030),
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, RouterName.signup);
-                            },
-                            child: Text(
-                              'Sign Up',
-                              style: GoogleFonts.leagueSpartan(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xff3299FF),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
                           TextButton(
                             onPressed: () {
                               Navigator.pushNamed(context, RouterName.signup);

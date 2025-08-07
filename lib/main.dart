@@ -4,10 +4,6 @@ import 'package:wise_spend_app/core/app/index.dart';
 import 'package:wise_spend_app/core/services/firebase_service.dart';
 import 'package:wise_spend_app/core/services/share_preferences_service.dart';
 import 'package:wise_spend_app/firebase_options.dart';
-import 'package:provider/provider.dart';
-import 'package:wise_spend_app/data/providers/total_provider.dart';
-import 'package:wise_spend_app/data/providers/category_provider.dart';
-import 'package:wise_spend_app/data/providers/remove_provider.dart';
 
 void main() async {
   try {
@@ -19,20 +15,9 @@ void main() async {
 
     await SharePreferencesService.init();
 
-    await FirebaseService.int();
+    await FirebaseService.init();
 
-    runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => TotalProvider()..listenTotalAll(),
-          ),
-          ChangeNotifierProvider(create: (_) => CategoryProvider()),
-          ChangeNotifierProvider(create: (_) => RemoveProvider()),
-        ],
-        child: Index(),
-      ),
-    );
+    runApp(Index());
   } catch (e, _) {
     // Show a minimal error UI instead of print
     runApp(

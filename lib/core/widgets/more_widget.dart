@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:wise_spend_app/data/providers/category_provider.dart';
-import 'package:wise_spend_app/core/services/firebase_service.dart';
 import 'package:wise_spend_app/core/widgets/notification_widget.dart';
 
 class MoreWidget extends StatefulWidget {
@@ -50,11 +47,7 @@ class _MoreWidgetState extends State<MoreWidget> {
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      NotificationWidget.show(
-        context,
-        'Lỗi: $e',
-        type: NotificationType.error,
-      );
+      NotificationWidget.show(context, 'Lỗi: $e', type: NotificationType.error);
     } finally {
       if (mounted) {
         setState(() {
@@ -146,17 +139,6 @@ class _MoreWidgetState extends State<MoreWidget> {
                 'Hủy',
                 style: GoogleFonts.poppins(
                   fontSize: 20.sp,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xff093030),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
                   fontWeight: FontWeight.w600,
                   color: const Color(0xff093030),
                 ),

@@ -1,16 +1,16 @@
-import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:intl/intl.dart';
 
 class DatePickerWidget extends StatefulWidget {
-  final List<DateTime?>? initialDates;
   final Function(List<DateTime?>) callBackFuntion;
+  final List<DateTime?> initialDates;
 
   const DatePickerWidget({
     super.key,
-    this.initialDates,
     required this.callBackFuntion,
+    this.initialDates = const [],
   });
 
   @override
@@ -18,84 +18,144 @@ class DatePickerWidget extends StatefulWidget {
 }
 
 class _DatePickerWidgetState extends State<DatePickerWidget> {
-  List<DateTime?> _dates = <DateTime?>[];
+  List<DateTime?> _dates = [];
 
   @override
   void initState() {
     super.initState();
-    _dates = widget.initialDates ?? <DateTime?>[];
+    _dates = List.from(widget.initialDates);
   }
 
-  @override
-  void didUpdateWidget(covariant DatePickerWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.initialDates != oldWidget.initialDates) {
-      setState(() {
-        _dates = widget.initialDates ?? <DateTime?>[];
-      });
-    }
-  }
-
-  void handleChangeDate() async {
-    final data = await showCalendarDatePicker2Dialog(
+  void handleChangeDate() {
+    showDialog(
       context: context,
-      config: CalendarDatePicker2WithActionButtonsConfig(
-        calendarType: CalendarDatePicker2Type.range,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Chọn ngày',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: CalendarDatePicker2(
+            config: CalendarDatePicker2Config(
+              calendarType: CalendarDatePicker2Type.range,
+              selectedDayHighlightColor: const Color(0xFF4CAF50),
+              weekdayLabelTextStyle: const TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+              ),
+              firstDayOfWeek: 1,
+              controlsHeight: 50,
+              dayBuilder:
+                  ({
+                    required date,
+                    textStyle,
+                    decoration,
+                    isSelected,
+                    isDisabled,
+                    isToday,
+                  }) {
+                    Widget? dayWidget;
+                    if (date.day % 3 == 0 && date.day % 9 != 0) {
+                      dayWidget = Container(
+                        decoration: decoration,
+                        child: Center(
+                          child: Stack(
+                            alignment: AlignmentDirectional.center,
+                            children: [
+                              Text(
+                                MaterialLocalizations.of(
+                                  context,
+                                ).formatDecimal(date.day),
+                                style: textStyle,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 27.5),
+                                child: Container(
+                                  height: 4,
+                                  width: 4,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: isSelected == true
+                                        ? Colors.white
+                                        : Colors.grey[500],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    return dayWidget;
+                  },
+            ),
+            value: _dates,
+            onValueChanged: (data) {
+              if (data.length > 1 && data[1].isBefore(data[0])) {
+                widget.callBackFuntion(<DateTime?>[]);
+                setState(() {
+                  _dates = <DateTime?>[];
+                });
+                return;
+              }
+
+              // Nếu chỉ chọn 1 ngày và ngày đó đã được chọn trước đó, bỏ chọn
+              if (data.length == 1 && _dates.length == 1 && _dates[0] != null) {
+                final old = _dates[0]!;
+                final tapped = data[0];
+                if (old.year == tapped.year &&
+                    old.month == tapped.month &&
+                    old.day == tapped.day) {
+                  widget.callBackFuntion(<DateTime?>[]);
+                  setState(() {
+                    _dates = <DateTime?>[];
+                  });
+                  return;
+                }
+              }
+
+              widget.callBackFuntion(data);
+              setState(() {
+                _dates = data;
+              });
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Hủy',
+              style: TextStyle(color: Colors.grey[600], fontSize: 16.sp),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4CAF50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.r),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            ),
+            onPressed: () {
+              widget.callBackFuntion(<DateTime?>[]);
+              setState(() {
+                _dates = <DateTime?>[];
+              });
+            },
+            child: Text(
+              'Hiện tất cả',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
-      dialogSize: const Size(325, 400),
-      value: _dates,
-      borderRadius: BorderRadius.circular(15),
     );
-
-    // Nếu nhấn Cancel, callback rỗng nhưng KHÔNG setState để giữ lại UI hiện tại
-    if (data == null) {
-      widget.callBackFuntion(<DateTime?>[]);
-      return;
-    }
-
-    // Nếu không chọn ngày nào
-    if (data.isEmpty || data[0] == null) {
-      widget.callBackFuntion(<DateTime?>[]);
-      setState(() {
-        _dates = <DateTime?>[];
-      });
-      return;
-    }
-
-    // Nếu chọn 2 ngày và ngày kết thúc < ngày bắt đầu, reset về rỗng
-    if (data.length > 1 &&
-        data[0] != null &&
-        data[1] != null &&
-        data[1]!.isBefore(data[0]!)) {
-      widget.callBackFuntion(<DateTime?>[]);
-      setState(() {
-        _dates = <DateTime?>[];
-      });
-      return;
-    }
-
-    // Nếu chỉ chọn 1 ngày và ngày đó đã được chọn trước đó,  bỏ chọn
-    if (data.length == 1 &&
-        data[0] != null &&
-        _dates.length == 1 &&
-        _dates[0] != null) {
-      final old = _dates[0]!;
-      final tapped = data[0]!;
-      if (old.year == tapped.year &&
-          old.month == tapped.month &&
-          old.day == tapped.day) {
-        widget.callBackFuntion(<DateTime?>[]);
-        setState(() {
-          _dates = <DateTime?>[];
-        });
-        return;
-      }
-    }
-
-    widget.callBackFuntion(data);
-    setState(() {
-      _dates = data;
-    });
   }
 
   @override
@@ -131,30 +191,6 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
                   Icon(Icons.calendar_today, size: 20.sp),
                 ],
               ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-          ),
-          onPressed: () {
-            widget.callBackFuntion(<DateTime?>[]);
-            setState(() {
-              _dates = <DateTime?>[];
-            });
-          },
-          child: Text(
-            'Hiện tất cả',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
             ),
           ),
         ),

@@ -18,6 +18,7 @@ import 'package:wise_spend_app/modules/authenticator/providers/forgot_password_p
 import 'package:wise_spend_app/modules/authenticator/providers/sign_in_provier.dart';
 import 'package:wise_spend_app/modules/authenticator/providers/sign_up_provider.dart';
 import 'package:wise_spend_app/data/providers/analysis_provider.dart';
+import 'package:wise_spend_app/routers/router_name.dart';
 
 class Index extends StatelessWidget {
   const Index({super.key});
@@ -52,7 +53,7 @@ class Index extends StatelessWidget {
             config: const ToastificationConfig(),
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              initialRoute: RouterCustom.initial,
+              initialRoute: RouterName.splash,
               onGenerateRoute: RouterCustom.onGenerateRoute,
               theme: AppTheme.lightTheme,
               // Add this to ensure sign in screen is rebuilt from scratch
