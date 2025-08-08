@@ -6,6 +6,7 @@ import 'package:wise_spend_app/modules/authenticator/screens/lauch_sceen.dart';
 import 'package:wise_spend_app/modules/authenticator/screens/sign_in_screen.dart';
 import 'package:wise_spend_app/modules/authenticator/screens/sign_up_screen.dart';
 import 'package:wise_spend_app/modules/category/screens/categories_screen.dart';
+import 'package:wise_spend_app/modules/category/screens/category_customization_screen.dart';
 import 'package:wise_spend_app/modules/home/screens/home_screen.dart';
 import 'package:wise_spend_app/modules/notification/screens/notification_screen.dart';
 import 'package:wise_spend_app/modules/profile/screens/profile_screen.dart';
@@ -32,7 +33,7 @@ class RouterCustom {
       case RouterName.recoverPassword:
         return MaterialPageRoute(builder: (_) => const RecoverPasswordScreen());
       case RouterName.home:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return _createFadeRoute(const HomeScreen());
       case RouterName.categories:
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
@@ -41,23 +42,47 @@ class RouterCustom {
             categoryId: args['categoryId'] ?? '',
           ),
         );
-      case RouterName.addExpenses:
+      case RouterName.categoryCustomization:
+        final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => const AddExpenseScreen(),
-          settings: settings,
+          builder: (_) => CategoryCustomizationScreen(
+            categoryId: args['categoryId'] ?? '',
+            categoryName: args['categoryName'] ?? '',
+          ),
         );
+      case RouterName.addExpenses:
+        return _createFadeRoute(const AddExpenseScreen());
       case RouterName.notification:
         return MaterialPageRoute(builder: (_) => const NotificationScreen());
       case RouterName.profile:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        return _createFadeRoute(const ProfileScreen());
       case RouterName.lauch:
         return MaterialPageRoute(builder: (_) => const LauchSceen());
       case RouterName.analysis:
-        return MaterialPageRoute(builder: (_) => const AnalysisScreen());
+        return _createFadeRoute(const AnalysisScreen());
       case RouterName.transaction:
-        return MaterialPageRoute(builder: (_) => const TransactionScreen());
+        return _createFadeRoute(const TransactionScreen());
       default:
         return MaterialPageRoute(builder: (_) => const ErrorScreen());
     }
+  }
+
+  static PageRouteBuilder _createFadeRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionDuration: const Duration(milliseconds: 300),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = 0.0;
+        const end = 1.0;
+        const curve = Curves.easeInOut;
+
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
+
+        return FadeTransition(opacity: animation.drive(tween), child: child);
+      },
+    );
   }
 }

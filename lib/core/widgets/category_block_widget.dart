@@ -23,37 +23,75 @@ class CategoryBlockWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80.w,
-            height: 80.w,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.25),
-              borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.3),
-                  offset: const Offset(0, 4),
-                  blurRadius: 8,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80.w,
+              height: 80.w,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    color.withValues(alpha: 0.3),
+                    color.withValues(alpha: 0.15),
+                  ],
                 ),
-              ],
+                borderRadius: BorderRadius.circular(20.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.25),
+                    offset: const Offset(0, 6),
+                    blurRadius: 12,
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    offset: const Offset(-2, -2),
+                    blurRadius: 6,
+                  ),
+                ],
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 40.sp,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    offset: const Offset(0, 2),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
             ),
-            child: Icon(icon, color: color, size: 40.sp),
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            name,
-            style: GoogleFonts.poppins(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
+            SizedBox(height: 12.h),
+            Text(
+              name,
+              style: GoogleFonts.poppins(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    offset: const Offset(0, 1),
+                    blurRadius: 2,
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

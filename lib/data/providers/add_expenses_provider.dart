@@ -98,14 +98,24 @@ class AddExpensesProvider extends ChangeNotifier {
       await FirebaseService.addExpenseToCategory(categoryId, expense);
       if (!context.mounted) return false;
       Provider.of<TotalProvider>(context, listen: false).listenTotalAll();
-      NotificationWidget.show(
-        context,
-        'Lưu khoản ${type == 'Thu' ? 'thu' : 'chi'} thành công',
-        type: NotificationType.success,
-      );
+
+      String message;
+      if (type == 'Thu') {
+        message = 'Lưu khoản thu thành công';
+      } else if (expense['category'] == 'Lương') {
+        message = 'Lưu lương thành công';
+      } else {
+        message = 'Lưu khoản chi thành công';
+      }
+
+      NotificationWidget.show(context, message, type: NotificationType.success);
+
+      // Reset all fields including date
       amountController.clear();
       titleController.clear();
       messageController.clear();
+      _selectedDate = DateTime.now(); // Reset về ngày hiện tại
+      _selectedCategory = null; // Reset category đã chọn
       notifyListeners();
       return true;
     } catch (e) {

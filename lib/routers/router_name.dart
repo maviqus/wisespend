@@ -14,4 +14,5 @@ class RouterName {
   static const String forgotPassword = '/forgot-password';
   static const String recoverPassword = '/recover-password';
   static const String editProfile = '/edit_profile';
+  static const String categoryCustomization = '/category-customization';
 }

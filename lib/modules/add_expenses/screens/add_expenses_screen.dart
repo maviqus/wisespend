@@ -12,7 +12,8 @@ import 'package:wise_spend_app/core/widgets/notification_widget.dart';
 import 'package:wise_spend_app/core/widgets/date_picker/date_picker_widget.dart';
 import 'package:wise_spend_app/modules/profile/providers/profile_provider.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
-import 'package:wise_spend_app/core/widgets/profile_avatar_widget.dart'; // Import the shared widget
+import 'package:wise_spend_app/core/widgets/profile_avatar_widget.dart';
+import 'package:wise_spend_app/core/services/firebase_service.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -44,6 +45,21 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final number = double.tryParse(value.replaceAll(',', ''));
     if (number == null) return '';
     return NumberFormat("#,###", "vi_VN").format(number);
+  }
+
+  Future<void> _createSalaryCategoryIfNeeded(
+    AddExpensesProvider provider,
+  ) async {
+    try {
+      // Tạo category Lương mặc định
+      final salaryCategory = {
+        'name': 'Lương',
+        'createdAt': DateTime.now().toIso8601String(),
+      };
+      await FirebaseService.createCategory(salaryCategory);
+    } catch (e) {
+      debugPrint('Error creating salary category: $e');
+    }
   }
 
   @override
@@ -90,7 +106,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           },
         ),
         title: Text(
-          'Thêm khoản chi',
+          _type == 'Lương'
+              ? 'Thêm lương'
+              : _type == 'Thu'
+              ? 'Thêm khoản thu'
+              : 'Thêm khoản chi',
           style: GoogleFonts.poppins(
             fontSize: 22.sp,
             fontWeight: FontWeight.w700,
@@ -145,7 +165,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   ),
                   SizedBox(height: 20.h),
 
-                  //Thu/Chi
+                  //Thu/Chi/Lương
                   Text(
                     'Loại',
                     style: GoogleFonts.poppins(
@@ -155,7 +175,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     ),
                   ),
                   SizedBox(height: 8.h),
-                  Row(
+                  Wrap(
+                    spacing: 12.w,
+                    runSpacing: 8.h,
                     children: [
                       ChoiceChip(
                         label: Text(
@@ -172,7 +194,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           });
                         },
                       ),
-                      SizedBox(width: 12.w),
                       ChoiceChip(
                         label: Text(
                           'Thu',
@@ -188,37 +209,56 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           });
                         },
                       ),
+                      ChoiceChip(
+                        label: Text(
+                          'Lương',
+                          style: TextStyle(
+                            color: _type == 'Lương'
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        selected: _type == 'Lương',
+                        selectedColor: const Color(0xff00D09E),
+                        onSelected: (selected) {
+                          setState(() {
+                            _type = 'Lương';
+                          });
+                        },
+                      ),
                     ],
                   ),
                   SizedBox(height: 20.h),
 
-                  // Category
-                  Text(
-                    'Danh mục',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xff093030),
+                  // Category - ẩn khi chọn Lương
+                  if (_type != 'Lương') ...[
+                    Text(
+                      'Danh mục',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff093030),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Container(
-                    height: 48.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.r),
+                    SizedBox(height: 8.h),
+                    Container(
+                      height: 48.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 8.w),
+                      child: CategoryDropdownWidget(
+                        categories: addExpensesProvider.categories,
+                        selectedCategory: addExpensesProvider.selectedCategory,
+                        onChanged: (value) {
+                          setState(() {
+                            addExpensesProvider.selectedCategory = value;
+                          });
+                        },
+                      ),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    child: CategoryDropdownWidget(
-                      categories: addExpensesProvider.categories,
-                      selectedCategory: addExpensesProvider.selectedCategory,
-                      onChanged: (value) {
-                        setState(() {
-                          addExpensesProvider.selectedCategory = value;
-                        });
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
+                    SizedBox(height: 20.h),
+                  ],
 
                   // Amount
                   Text(
@@ -246,7 +286,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
                   // Expense Title
                   Text(
-                    'Tên khoản chi',
+                    _type == 'Lương'
+                        ? 'Tên khoản lương'
+                        : _type == 'Thu'
+                        ? 'Tên khoản thu'
+                        : 'Tên khoản chi',
                     style: GoogleFonts.poppins(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -256,7 +300,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   SizedBox(height: 8.h),
                   ButtonTextFilledWidget(
                     controller: addExpensesProvider.titleController,
-                    hintText: 'Nhập tên khoản chi',
+                    hintText: _type == 'Lương'
+                        ? 'Nhập tên khoản lương'
+                        : _type == 'Thu'
+                        ? 'Nhập tên khoản thu'
+                        : 'Nhập tên khoản chi',
                     fillColor: const Color(0xFFE6F7EE),
                     borderRadius: 20,
                     textStyle: GoogleFonts.poppins(
@@ -303,8 +351,35 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               color: const Color(0xff00D09E),
               radius: 24,
               onTap: () async {
-                final selectedCategoryId =
-                    categoryIdArg ?? addExpensesProvider.selectedCategory;
+                String? selectedCategoryId;
+
+                if (_type == 'Lương') {
+                  // Tìm category "Lương" trong danh sách
+                  final salaryCategory = addExpensesProvider.categories
+                      .firstWhere(
+                        (cat) => cat['name'] == 'Lương',
+                        orElse: () => {},
+                      );
+
+                  if (salaryCategory.isEmpty) {
+                    // Nếu chưa có category Lương, tạo mới
+                    await _createSalaryCategoryIfNeeded(addExpensesProvider);
+                    // Load lại categories sau khi tạo
+                    await addExpensesProvider.loadCategories();
+                    final newSalaryCategory = addExpensesProvider.categories
+                        .firstWhere(
+                          (cat) => cat['name'] == 'Lương',
+                          orElse: () => {},
+                        );
+                    selectedCategoryId = newSalaryCategory['id'];
+                  } else {
+                    selectedCategoryId = salaryCategory['id'];
+                  }
+                } else {
+                  selectedCategoryId =
+                      categoryIdArg ?? addExpensesProvider.selectedCategory;
+                }
+
                 if (selectedCategoryId != null &&
                     selectedCategoryId.isNotEmpty) {
                   // Show loading indicator
@@ -316,7 +391,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   bool success = await addExpensesProvider.saveExpense(
                     context,
                     selectedCategoryId,
-                    type: _type,
+                    type: _type == 'Lương'
+                        ? 'Thu'
+                        : _type, // Lương được xử lý như Thu
                   );
 
                   // Only navigate if save was successful and context is still valid
@@ -328,7 +405,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   if (mounted) {
                     NotificationWidget.show(
                       context,
-                      'Vui lòng chọn danh mục',
+                      _type == 'Lương'
+                          ? 'Không thể tạo danh mục Lương'
+                          : 'Vui lòng chọn danh mục',
                       type: NotificationType.error,
                     );
                   }

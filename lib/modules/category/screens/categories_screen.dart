@@ -8,6 +8,8 @@ import 'package:wise_spend_app/data/providers/category_provider.dart';
 import 'package:wise_spend_app/core/widgets/category_item_widget.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
 import 'package:wise_spend_app/core/widgets/animated_loader.dart';
+import 'package:wise_spend_app/modules/profile/providers/profile_provider.dart';
+import 'package:wise_spend_app/core/widgets/profile_avatar_widget.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({
@@ -44,7 +46,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         actions: [
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, RouterName.notification);
+              Navigator.pushNamed(context, RouterName.profile);
             },
             child: Container(
               margin: EdgeInsets.only(right: 24.w),
@@ -59,12 +61,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   ),
                 ],
               ),
-              child: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.notifications_none_outlined,
-                  color: Colors.black87,
-                  size: 24.sp,
+              child: Padding(
+                padding: EdgeInsets.all(4.w),
+                child: Consumer<ProfileProvider>(
+                  builder: (context, profileProvider, _) {
+                    return ProfileAvatar(
+                      profileUrl: profileProvider.profilePicUrl,
+                      userName: profileProvider.userName,
+                      radius: 16.r,
+                    );
+                  },
                 ),
               ),
             ),
@@ -151,6 +157,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       child: Consumer<CategoryProvider>(
                         builder: (context, categoryProvider, child) {
                           final selectedDate = categoryProvider.selectedDate;
+                          debugPrint('🗓️ Selected dates: $selectedDate');
                           return StreamBuilder(
                             stream: FirebaseService.getExpensesOfCategory(
                               widget.categoryId,
@@ -162,12 +169,48 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   ConnectionState.waiting;
 
                               if (snapshot.hasError) {
+                                debugPrint(
+                                  '❌ Category screen error: ${snapshot.error}',
+                                );
                                 return Center(
-                                  child: Text('Lỗi: ${snapshot.error}'),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline,
+                                        size: 48,
+                                        color: Colors.red,
+                                      ),
+                                      SizedBox(height: 16),
+                                      Text(
+                                        'Lỗi khi tải dữ liệu',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        '${snapshot.error}',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                      SizedBox(height: 16),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          categoryProvider.selectedDate = [];
+                                        },
+                                        child: Text('Thử lại'),
+                                      ),
+                                    ],
+                                  ),
                                 );
                               }
 
                               final expenses = snapshot.data?.docs ?? [];
+                              debugPrint(
+                                '📊 Found ${expenses.length} expenses for category ${widget.categoryId}',
+                              );
 
                               return AnimatedLoader(
                                 isLoading: isLoading,

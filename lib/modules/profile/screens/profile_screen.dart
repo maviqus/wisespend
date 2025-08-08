@@ -63,22 +63,24 @@ class ProfileScreenBody extends StatelessWidget {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 16.w),
-            child: profileProvider.isLoading
-                ? CircularProgressIndicator(color: Colors.white)
-                : Consumer<ProfileProvider>(
-                    builder: (context, profileProvider, _) {
-                      return ProfileAvatar(
-                        // Force refresh on home screen using provider flag
-                        key: ValueKey(
-                          'home-${profileProvider.forceAvatarRefresh ? 'refresh' : 'normal'}-${DateTime.now().millisecondsSinceEpoch}',
-                        ),
-                        profileUrl: profileProvider.profilePicUrl,
-                        userName: profileProvider.userName,
-                        radius: 20.r,
-                        forceRefresh: profileProvider.forceAvatarRefresh,
-                      );
-                    },
+            child: Consumer<ProfileProvider>(
+              builder: (context, profileProvider, _) {
+                return AnimatedOpacity(
+                  opacity: profileProvider.isLoading ? 0.5 : 1.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: ProfileAvatar(
+                    // Force refresh on home screen using provider flag
+                    key: ValueKey(
+                      'home-${profileProvider.forceAvatarRefresh ? 'refresh' : 'normal'}-${DateTime.now().millisecondsSinceEpoch}',
+                    ),
+                    profileUrl: profileProvider.profilePicUrl,
+                    userName: profileProvider.userName,
+                    radius: 20.r,
+                    forceRefresh: profileProvider.forceAvatarRefresh,
                   ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -252,19 +254,21 @@ class ProfileScreenBody extends StatelessWidget {
                 shape: CircleBorder(),
                 clipBehavior: Clip.hardEdge,
                 color: Colors.transparent,
-                child: profileProvider.isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
-                        ),
-                        child: ProfileAvatar(
-                          profileUrl: profileProvider.profilePicUrl,
-                          userName: profileProvider.userName,
-                          radius: 50.r,
-                        ),
-                      ),
+                child: AnimatedOpacity(
+                  opacity: profileProvider.isLoading ? 0.5 : 1.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 3),
+                    ),
+                    child: ProfileAvatar(
+                      profileUrl: profileProvider.profilePicUrl,
+                      userName: profileProvider.userName,
+                      radius: 50.r,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

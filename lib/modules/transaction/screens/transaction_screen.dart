@@ -585,7 +585,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
         elevation: 4,
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      bottomNavigationBar: const RootNavBar(currentIndex: 2),
+      bottomNavigationBar: const RootNavBar(currentIndex: 3),
     );
   }
 }

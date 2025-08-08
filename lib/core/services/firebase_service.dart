@@ -82,6 +82,19 @@ class FirebaseService {
         .delete();
   }
 
+  static Future<void> updateCategory(
+    String categoryId,
+    Map<String, dynamic> updateData,
+  ) async {
+    final userId = getCurrentUserId();
+    await firebaseFirestore
+        .collection('users')
+        .doc(userId)
+        .collection('category')
+        .doc(categoryId)
+        .update(updateData);
+  }
+
   // Expenses
   static CollectionReference<Map<String, dynamic>> getExpensesCollection() {
     final userId = getCurrentUserId();

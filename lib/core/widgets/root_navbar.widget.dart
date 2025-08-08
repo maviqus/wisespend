@@ -10,54 +10,67 @@ class RootNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 76.h,
+      height: 90.h,
       decoration: BoxDecoration(
-        color: Color(0xffDFF7E2),
+        color: const Color(0xfffdff7e2),
+
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            offset: const Offset(0, -1),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.08),
+            offset: const Offset(0, -2),
+            blurRadius: 20,
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Stack(
         children: [
-          _buildNavItem(
-            context,
-            index: 0,
-            icon: Icons.home_outlined,
-            activeIcon: Icons.home,
-            route: RouterName.home,
+          // Main navigation items
+          Positioned.fill(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(
+                  context,
+                  index: 0,
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home,
+                  route: RouterName.home,
+                  label: 'Trang chủ',
+                ),
+                _buildNavItem(
+                  context,
+                  index: 1,
+                  icon: Icons.analytics_outlined,
+                  activeIcon: Icons.analytics,
+                  route: RouterName.analysis,
+                  label: 'Phân tích',
+                ),
+                // Empty space for center FAB
+                SizedBox(width: 60.w),
+                _buildNavItem(
+                  context,
+                  index: 3,
+                  icon: Icons.layers_outlined,
+                  activeIcon: Icons.layers,
+                  route: RouterName.transaction,
+                  label: 'Giao dịch',
+                ),
+                _buildNavItem(
+                  context,
+                  index: 4,
+                  icon: Icons.person_outline,
+                  activeIcon: Icons.person,
+                  route: RouterName.profile,
+                  label: 'Cá nhân',
+                ),
+              ],
+            ),
           ),
-          _buildNavItem(
-            context,
-            index: 1,
-            icon: Icons.bar_chart_outlined,
-            activeIcon: Icons.bar_chart,
-            route: RouterName.analysis,
-          ),
-          _buildNavItem(
-            context,
-            index: 2,
-            icon: Icons.account_balance_wallet_outlined,
-            activeIcon: Icons.account_balance_wallet,
-            route: RouterName.transaction,
-          ),
-          _buildNavItem(
-            context,
-            index: 3,
-            icon: Icons.add_circle_outline,
-            activeIcon: Icons.add_circle,
-            route: RouterName.addExpenses,
-          ),
-          _buildNavItem(
-            context,
-            index: 4,
-            icon: Icons.person_outline,
-            activeIcon: Icons.person,
-            route: RouterName.profile,
+          // Center Add Button
+          Positioned(
+            top: 10.h,
+            left: MediaQuery.of(context).size.width / 2 - 30.w,
+            child: _buildCenterAddButton(context),
           ),
         ],
       ),
@@ -70,33 +83,94 @@ class RootNavBar extends StatelessWidget {
     required IconData icon,
     required IconData activeIcon,
     required String route,
+    required String label,
   }) {
     final bool isActive = index == currentIndex;
 
     return InkWell(
       onTap: () {
         if (index != currentIndex) {
-          Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
+          _navigateWithFade(context, route);
         }
       },
-      child: SizedBox(
-        width: 70.w,
-        child: Center(
-          child: Container(
-            width: 48.w,
-            height: 48.w,
-            decoration: BoxDecoration(
-              color: isActive ? const Color(0xff00D09E) : Colors.transparent,
-              borderRadius: BorderRadius.circular(24.r), // More rounded corners
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 48.w,
+              height: 48.w,
+              decoration: BoxDecoration(
+                color: isActive
+                    ? const Color(0xff00D09E).withValues(alpha: 0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(16.r),
+              ),
+              child: Icon(
+                isActive ? activeIcon : icon,
+                color: isActive
+                    ? const Color(0xff00D09E)
+                    : Colors.grey.shade600,
+                size: 24.sp,
+              ),
             ),
-            child: Icon(
-              isActive ? activeIcon : icon,
-              color: isActive ? Colors.white : Colors.grey,
-              size: 24.sp,
+            SizedBox(height: 4.h),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                color: isActive
+                    ? const Color(0xff00D09E)
+                    : Colors.grey.shade600,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _buildCenterAddButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        _navigateWithFade(context, RouterName.addExpenses);
+      },
+      child: Container(
+        width: 60.w,
+        height: 60.w,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [const Color(0xff00D09E), const Color(0xff00B085)],
+          ),
+          borderRadius: BorderRadius.circular(30.r),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xff00D09E).withValues(alpha: 0.3),
+              offset: const Offset(0, 4),
+              blurRadius: 12,
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              offset: const Offset(0, 2),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: Icon(Icons.add, color: Colors.white, size: 28.sp),
+      ),
+    );
+  }
+
+  void _navigateWithFade(BuildContext context, String routeName) {
+    if (routeName == RouterName.addExpenses) {
+      Navigator.pushNamed(context, routeName);
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, routeName, (r) => false);
+    }
   }
 }

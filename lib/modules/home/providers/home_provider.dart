@@ -90,20 +90,33 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addCategory(BuildContext context, String categoryName) async {
+  Future<Map<String, dynamic>?> addCategory(
+    BuildContext context,
+    String categoryName,
+  ) async {
     if (categoryName.trim().isEmpty) {
       _errorMessage = 'Tên danh mục không được để trống';
       notifyListeners();
-      return;
+      return null;
     }
 
     try {
-      await CategoryService.createCategory({
+      final docRef = await CategoryService.createCategory({
         'name': categoryName,
         'createdAt': DateTime.now().toIso8601String(),
       });
 
-      await loadCategories();
+      // Create category data with the generated ID
+      final categoryData = {
+        'id': docRef.id,
+        'name': categoryName,
+        'createdAt': DateTime.now().toIso8601String(),
+      };
+
+      // Add to local state immediately for instant UI update
+      _categories.add(categoryData);
+      // DEBUG: Added category to local state
+      notifyListeners();
 
       if (context.mounted) {
         NotificationWidget.show(
@@ -112,6 +125,8 @@ class HomeProvider extends ChangeNotifier {
           type: NotificationType.success,
         );
       }
+
+      return categoryData;
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
@@ -123,6 +138,7 @@ class HomeProvider extends ChangeNotifier {
           type: NotificationType.error,
         );
       }
+      return null;
     }
   }
 
@@ -131,11 +147,20 @@ class HomeProvider extends ChangeNotifier {
     String categoryId,
     String categoryName,
   ) async {
-    try {
-      await CategoryService.removeCategoryAndExpenses(categoryId);
+    // Store backup of categories in case of error
+    final originalCategories = List<Map<String, dynamic>>.from(_categories);
 
+    try {
+      // Remove from local state first for instant UI update
       _categories.removeWhere((cat) => cat['id'] == categoryId);
+      print(
+        'DEBUG: Removed category from local state. Total categories: ${_categories.length}',
+      );
+      print('DEBUG: Categories: ${_categories.map((c) => c['name']).toList()}');
       notifyListeners();
+
+      // Then remove from Firebase
+      await CategoryService.removeCategoryAndExpenses(categoryId);
 
       if (context.mounted) {
         NotificationWidget.show(
@@ -145,6 +170,8 @@ class HomeProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
+      // If error occurs, restore the original state
+      _categories = originalCategories;
       _errorMessage = e.toString();
       notifyListeners();
 
@@ -167,6 +194,7 @@ class HomeProvider extends ChangeNotifier {
         FirebaseService.getCurrentUserId(),
       );
 
+      // Reload categories to get the fresh data from Firebase
       await loadCategories();
 
       if (context.mounted) {
@@ -178,6 +206,7 @@ class HomeProvider extends ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = e.toString();
+      _isLoading = false;
       notifyListeners();
 
       if (context.mounted) {

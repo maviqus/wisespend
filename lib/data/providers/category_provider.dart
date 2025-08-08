@@ -10,7 +10,11 @@ class CategoryProvider extends ChangeNotifier {
     {'name': 'Hóa đơn', 'icon': Icons.receipt_long, 'color': Color(0xFF26A69A)},
     {'name': 'Tiết kiệm', 'icon': Icons.savings, 'color': Color(0xFF66BB6A)},
     {'name': 'Học tập', 'icon': Icons.school, 'color': Color(0xFF29B6F6)},
-    {'name': 'Quà tặng', 'icon': Icons.card_giftcard, 'color': Color(0xFFFFB74D)},
+    {
+      'name': 'Quà tặng',
+      'icon': Icons.card_giftcard,
+      'color': Color(0xFFFFB74D),
+    },
     {'name': 'Lương', 'icon': Icons.attach_money, 'color': Color(0xFF4CAF50)},
   ];
 
@@ -137,5 +141,71 @@ class CategoryProvider extends ChangeNotifier {
   void setLoadingExpenses(bool value) {
     _isLoadingExpenses = value;
     notifyListeners();
+  }
+
+  Future<void> updateCategoryCustomization(
+    String categoryId, {
+    String? iconUrl,
+    Color? color,
+    IconData? iconData,
+  }) async {
+    try {
+      Map<String, dynamic> updateData = {};
+
+      if (iconUrl != null) {
+        updateData['customIconUrl'] = iconUrl;
+      }
+
+      if (color != null) {
+        updateData['customColor'] = color.value.toRadixString(16).padLeft(8, '0');
+      }
+
+      if (iconData != null) {
+        updateData['customIconCode'] = iconData.codePoint;
+      }
+
+      await FirebaseService.updateCategory(categoryId, updateData);
+
+      // Update local categories
+      final categoryIndex = _categories.indexWhere(
+        (cat) => cat['id'] == categoryId,
+      );
+      if (categoryIndex != -1) {
+        _categories[categoryIndex] = {
+          ..._categories[categoryIndex],
+          ...updateData,
+        };
+        notifyListeners();
+      }
+
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<void> resetCategoryCustomization(String categoryId) async {
+    try {
+      await FirebaseService.updateCategory(categoryId, {
+        'customIconUrl': null,
+        'customColor': null,
+      });
+
+      // Update local categories
+      final categoryIndex = _categories.indexWhere(
+        (cat) => cat['id'] == categoryId,
+      );
+      if (categoryIndex != -1) {
+        _categories[categoryIndex].remove('customIconUrl');
+        _categories[categoryIndex].remove('customColor');
+        notifyListeners();
+      }
+
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
   }
 }
