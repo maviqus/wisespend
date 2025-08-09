@@ -76,11 +76,19 @@ class AddExpensesProvider extends ChangeNotifier {
     );
     final categoryName = category['name'] ?? '';
 
-    double amount =
-        double.tryParse(
-          amountController.text.replaceAll(',', '').replaceAll('.', ''),
-        ) ??
-        0;
+    // Chuẩn hóa chuỗi số
+    final rawDigits = amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    // Giới hạn độ dài đồng bộ với input (12 digits)
+    const int kMaxAmountDigits = 12;
+    if (rawDigits.length > kMaxAmountDigits) {
+      NotificationWidget.show(
+        context,
+        'Số tiền quá lớn (tối đa ${kMaxAmountDigits} chữ số)',
+        type: NotificationType.error,
+      );
+      return false;
+    }
+    double amount = double.tryParse(rawDigits) ?? 0;
     if (type == 'Chi') amount = -amount;
 
     final expense = {

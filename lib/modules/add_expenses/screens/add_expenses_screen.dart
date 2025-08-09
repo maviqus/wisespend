@@ -14,6 +14,8 @@ import 'package:wise_spend_app/modules/profile/providers/profile_provider.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
 import 'package:wise_spend_app/core/widgets/profile_avatar_widget.dart';
 import 'package:wise_spend_app/core/services/firebase_service.dart';
+import 'package:flutter/services.dart';
+import 'package:wise_spend_app/core/utils/max_digits_formatter.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -69,17 +71,29 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final String? categoryIdArg =
         ModalRoute.of(context)?.settings.arguments as String?;
 
+    const int kMaxAmountDigits = 12; // ~ upto 999,999,999,999 VND
     void onAmountChanged(String value) {
+      // Lọc chỉ số
       String digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+
       if (digits.isEmpty) {
         addExpensesProvider.amountController.text = '';
         return;
       }
+
+      // Giới hạn độ dài để tránh FormatException / int overflow trên một số nền tảng
+      if (digits.length > kMaxAmountDigits) {
+        digits = digits.substring(0, kMaxAmountDigits);
+      }
+
+      // Dùng int.parse an toàn vì đã giới hạn độ dài
+      final parsed = int.tryParse(digits) ?? 0;
+
       final formatted = NumberFormat.currency(
-        locale: "vi_VN",
-        symbol: "",
+        locale: 'vi_VN',
+        symbol: '',
         decimalDigits: 0,
-      ).format(int.parse(digits));
+      ).format(parsed);
 
       addExpensesProvider.amountController.value = TextEditingValue(
         text: formatted,
@@ -280,6 +294,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       color: const Color(0xff093030),
                     ),
                     keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      const MaxDigitsFormatter(12),
+                    ],
                     onChanged: onAmountChanged,
                   ),
                   SizedBox(height: 20.h),

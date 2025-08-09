@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ButtonTextFilledWidget extends StatefulWidget {
@@ -16,6 +17,7 @@ class ButtonTextFilledWidget extends StatefulWidget {
   final bool obscureText;
   final bool enabled;
   final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
 
   const ButtonTextFilledWidget({
     super.key,
@@ -33,6 +35,7 @@ class ButtonTextFilledWidget extends StatefulWidget {
     this.obscureText = false,
     this.enabled = true,
     this.keyboardType,
+  this.inputFormatters,
   });
 
   @override
@@ -61,6 +64,7 @@ class _ButtonTextFilledWidgetState extends State<ButtonTextFilledWidget> {
       child: Center(
         child: TextFormField(
           controller: widget.controller,
+          inputFormatters: widget.inputFormatters,
           validator: widget.validator,
           obscureText: widget.isPasswordField
               ? _obscureText
