@@ -27,41 +27,48 @@ class RootNavBar extends StatelessWidget {
           // Main navigation items
           Positioned.fill(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildNavItem(
-                  context,
-                  index: 0,
-                  icon: Icons.home_outlined,
-                  activeIcon: Icons.home,
-                  route: RouterName.home,
-                  label: 'Trang chủ',
+                Expanded(
+                  child: _buildNavItem(
+                    context,
+                    index: 0,
+                    icon: Icons.home_outlined,
+                    activeIcon: Icons.home,
+                    route: RouterName.home,
+                    label: 'Home',
+                  ),
                 ),
-                _buildNavItem(
-                  context,
-                  index: 1,
-                  icon: Icons.analytics_outlined,
-                  activeIcon: Icons.analytics,
-                  route: RouterName.analysis,
-                  label: 'Phân tích',
+                Expanded(
+                  child: _buildNavItem(
+                    context,
+                    index: 1,
+                    icon: Icons.analytics_outlined,
+                    activeIcon: Icons.analytics,
+                    route: RouterName.analysis,
+                    label: 'Thống kê',
+                  ),
                 ),
-                // Empty space for center FAB
-                SizedBox(width: 60.w),
-                _buildNavItem(
-                  context,
-                  index: 3,
-                  icon: Icons.layers_outlined,
-                  activeIcon: Icons.layers,
-                  route: RouterName.transaction,
-                  label: 'Giao dịch',
+                // Spacing for the center button
+                SizedBox(width: 70.w),
+                Expanded(
+                  child: _buildNavItem(
+                    context,
+                    index: 3,
+                    icon: Icons.receipt_long_outlined,
+                    activeIcon: Icons.receipt_long,
+                    route: RouterName.transaction,
+                    label: 'Lịch sử',
+                  ),
                 ),
-                _buildNavItem(
-                  context,
-                  index: 4,
-                  icon: Icons.person_outline,
-                  activeIcon: Icons.person,
-                  route: RouterName.profile,
-                  label: 'Cá nhân',
+                Expanded(
+                  child: _buildNavItem(
+                    context,
+                    index: 4,
+                    icon: Icons.person_outline,
+                    activeIcon: Icons.person,
+                    route: RouterName.profile,
+                    label: 'Profile',
+                  ),
                 ),
               ],
             ),
@@ -116,16 +123,18 @@ class RootNavBar extends StatelessWidget {
                 size: 24.sp,
               ),
             ),
-            SizedBox(height: 4.h),
+            SizedBox(height: 2.h),
             Text(
               label,
               style: TextStyle(
-                fontSize: 10.sp,
+                fontSize: 8.sp,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 color: isActive
                     ? const Color(0xff00D09E)
                     : Colors.grey.shade600,
               ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ],
         ),

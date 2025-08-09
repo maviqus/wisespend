@@ -10,6 +10,7 @@ import 'package:wise_spend_app/modules/category/screens/category_customization_s
 import 'package:wise_spend_app/modules/home/screens/home_screen.dart';
 import 'package:wise_spend_app/modules/notification/screens/notification_screen.dart';
 import 'package:wise_spend_app/modules/profile/screens/profile_screen.dart';
+import 'package:wise_spend_app/modules/profile/screens/help_screen.dart';
 import 'package:wise_spend_app/modules/splash/splash_screen.dart';
 import 'package:wise_spend_app/modules/welcome/screens/welcome_screen.dart';
 import 'package:wise_spend_app/routers/router_name.dart';
@@ -56,6 +57,8 @@ class RouterCustom {
         return MaterialPageRoute(builder: (_) => const NotificationScreen());
       case RouterName.profile:
         return _createFadeRoute(const ProfileScreen());
+      case RouterName.help:
+        return _createFadeRoute(const HelpScreen());
       case RouterName.lauch:
         return MaterialPageRoute(builder: (_) => const LauchSceen());
       case RouterName.analysis:

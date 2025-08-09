@@ -89,6 +89,15 @@ class _AnalysisScreenState extends State<AnalysisScreen>
           7,
           (i) => now.subtract(Duration(days: 6 - i)),
         );
+        const weekdayMap = {
+          1: 'T2',
+          2: 'T3',
+          3: 'T4',
+          4: 'T5',
+          5: 'T6',
+          6: 'T7',
+          7: 'CN',
+        };
         for (final day in days) {
           final dateStr = DateFormat('yyyy-MM-dd').format(day);
           double income = 0, expense = 0;
@@ -108,7 +117,7 @@ class _AnalysisScreenState extends State<AnalysisScreen>
           }
 
           chartData.add({
-            'label': DateFormat('E').format(day),
+            'label': weekdayMap[day.weekday] ?? 't?',
             'income': income,
             'expense': expense,
           });
@@ -282,7 +291,6 @@ class _AnalysisScreenState extends State<AnalysisScreen>
                   ),
                 ],
               ),
-              // Replace notification icon with ProfileAvatar
               child: Consumer<ProfileProvider>(
                 builder: (context, profileProvider, _) {
                   return ProfileAvatar(
@@ -388,18 +396,6 @@ class _AnalysisScreenState extends State<AnalysisScreen>
                             ),
 
                             SizedBox(height: 24.h),
-
-                            Text(
-                              'Mục tiêu của tôi',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18.sp,
-                                color: const Color(0xff093030),
-                              ),
-                            ),
-                            SizedBox(height: 16.h),
-
-                            _buildTargetCard(),
                           ],
                         ),
                       ),
@@ -469,45 +465,47 @@ class _AnalysisScreenState extends State<AnalysisScreen>
               ),
               const Spacer(),
               Container(
-                padding: EdgeInsets.all(8.w),
+                padding: EdgeInsets.all(6.w),
                 decoration: BoxDecoration(
                   color: const Color(0xffE6F7EE),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 10.w,
-                      height: 10.w,
+                      width: 8.w,
+                      height: 8.w,
                       decoration: BoxDecoration(
                         color: const Color(0xff00D09E),
-                        borderRadius: BorderRadius.circular(5.r),
+                        borderRadius: BorderRadius.circular(4.r),
                       ),
                     ),
-                    SizedBox(width: 4.w),
-                    Text('Thu', style: GoogleFonts.poppins(fontSize: 12.sp)),
+                    SizedBox(width: 3.w),
+                    Text('Thu', style: GoogleFonts.poppins(fontSize: 11.sp)),
                   ],
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 6.w),
               Container(
-                padding: EdgeInsets.all(8.w),
+                padding: EdgeInsets.all(6.w),
                 decoration: BoxDecoration(
                   color: const Color(0xffE6F7EE),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 10.w,
-                      height: 10.w,
+                      width: 8.w,
+                      height: 8.w,
                       decoration: BoxDecoration(
                         color: const Color(0xff2D9CDB),
-                        borderRadius: BorderRadius.circular(5.r),
+                        borderRadius: BorderRadius.circular(4.r),
                       ),
                     ),
-                    SizedBox(width: 4.w),
-                    Text('Chi', style: GoogleFonts.poppins(fontSize: 12.sp)),
+                    SizedBox(width: 3.w),
+                    Text('Chi', style: GoogleFonts.poppins(fontSize: 11.sp)),
                   ],
                 ),
               ),
@@ -690,87 +688,6 @@ class _AnalysisScreenState extends State<AnalysisScreen>
               fontWeight: FontWeight.w700,
               fontSize: 18.sp,
               color: iconColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTargetCard() {
-    final savingsPercentage = 70.0;
-
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(13),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(10.w),
-                decoration: BoxDecoration(
-                  color: const Color(0xff00D09E).withAlpha(25),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Icon(
-                  Icons.savings_outlined,
-                  color: const Color(0xff00D09E),
-                  size: 24.sp,
-                ),
-              ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Mục tiêu tiết kiệm',
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16.sp,
-                      ),
-                    ),
-                    Text(
-                      'Tiết kiệm 30% thu nhập',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14.sp,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                '$savingsPercentage%',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20.sp,
-                  color: const Color(0xff00D09E),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.r),
-            child: LinearProgressIndicator(
-              value: savingsPercentage / 100,
-              backgroundColor: Colors.grey.shade200,
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                Color(0xff00D09E),
-              ),
-              minHeight: 10.h,
             ),
           ),
         ],

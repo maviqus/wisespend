@@ -7,12 +7,23 @@ class HomeProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _categories = [];
   bool _isLoading = true;
   String? _errorMessage;
-  String _greeting = "Chào ngày mới";
 
   List<Map<String, dynamic>> get categories => _categories;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  String get greeting => _greeting;
+
+  String getGreetingByTime() {
+    final hour = DateTime.now().hour;
+    if (hour >= 6 && hour < 12) {
+      return "Chúc bạn buổi sáng vui vẻ";
+    } else if (hour >= 12 && hour < 14) {
+      return "Chúc bạn buổi trưa vui vẻ";
+    } else if (hour >= 14 && hour < 18) {
+      return "Chúc bạn buổi chiều vui vẻ";
+    } else {
+      return "Chúc bạn buổi tối vui vẻ";
+    }
+  }
 
   final List<Map<String, dynamic>> defaultCategories = [
     {'name': 'Ăn uống', 'icon': Icons.restaurant, 'color': Color(0xFF1E88E5)},
@@ -40,20 +51,7 @@ class HomeProvider extends ChangeNotifier {
   ];
 
   HomeProvider() {
-    setGreeting();
     loadCategories();
-  }
-
-  void setGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) {
-      _greeting = "Chào buổi sáng";
-    } else if (hour < 18) {
-      _greeting = "Chào buổi chiều";
-    } else {
-      _greeting = "Chào buổi tối";
-    }
-    notifyListeners();
   }
 
   Future<void> loadCategories() async {

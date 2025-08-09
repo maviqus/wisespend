@@ -263,24 +263,40 @@ class _TransactionScreenState extends State<TransactionScreen> {
             '$formattedTime - $formattedDate',
             style: GoogleFonts.poppins(fontSize: 14.sp, color: Colors.grey),
           ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                category,
-                style: GoogleFonts.poppins(fontSize: 14.sp, color: Colors.grey),
-              ),
-              SizedBox(height: 4.h),
-              Text(
-                '${isIncome ? '+' : '-'} ${NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(amount)}',
-                style: GoogleFonts.poppins(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: isIncome ? Colors.green : Colors.red,
+          trailing: SizedBox(
+            width: 120.w,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    category,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.sp,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(height: 2.h),
+                Flexible(
+                  child: Text(
+                    '${isIncome ? '+' : '-'} ${NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(amount)}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: isIncome ? Colors.green : Colors.red,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
           onTap: () {},
           onLongPress: () {

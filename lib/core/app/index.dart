@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:wise_spend_app/core/utils/theme.dart';
 import 'package:wise_spend_app/data/providers/add_expenses_provider.dart';
 import 'package:wise_spend_app/data/providers/category_provider.dart';
@@ -58,6 +59,10 @@ class Index extends StatelessWidget {
               theme: AppTheme.lightTheme,
               // Add this to ensure sign in screen is rebuilt from scratch
               navigatorKey: GlobalKey<NavigatorState>(),
+              // DevicePreview configuration
+              useInheritedMediaQuery: true,
+              locale: DevicePreview.locale(context),
+              builder: DevicePreview.appBuilder,
             ),
           ),
         );

@@ -442,7 +442,9 @@ class _CategoryCustomizationScreenState
             width: 80.w,
             height: 80.w,
             decoration: BoxDecoration(
-              color: (_selectedColor ?? const Color(0xff00D09E)).withValues(alpha: 0.1),
+              color: (_selectedColor ?? const Color(0xff00D09E)).withValues(
+                alpha: 0.1,
+              ),
               borderRadius: BorderRadius.circular(20.r),
             ),
             child: Icon(
@@ -495,7 +497,7 @@ class _CategoryCustomizationScreenState
               final icon = availableIcons[index];
               final isSelected = _selectedIcon == icon;
               final color = _selectedColor ?? const Color(0xff00D09E);
-              
+
               return GestureDetector(
                 onTap: () {
                   setState(() {
@@ -522,7 +524,7 @@ class _CategoryCustomizationScreenState
               );
             },
           ),
-          
+
           if (_selectedIcon != null) ...[
             SizedBox(height: 16.h),
             TextButton.icon(

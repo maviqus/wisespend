@@ -6,6 +6,7 @@ class RouterName {
   static const String analysis = '/analysis';
   static const String transaction = '/transaction';
   static const String profile = '/profile';
+  static const String help = '/help';
   static const String categories = '/categories';
   static const String notification = '/notification';
   static const String addExpenses = '/add-expenses';

@@ -52,7 +52,7 @@ class ProfileScreenBody extends StatelessWidget {
           },
         ),
         title: Text(
-          'Profile',
+          'Cá nhân',
           style: GoogleFonts.poppins(
             fontSize: 24.sp,
             fontWeight: FontWeight.w600,
@@ -84,195 +84,197 @@ class ProfileScreenBody extends StatelessWidget {
           ),
         ],
       ),
-      body: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Green top section
-          Container(height: 150.h, color: const Color(0xff00D09E)),
+      body: SingleChildScrollView(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Green top section
+            Container(height: 150.h, color: const Color(0xff00D09E)),
 
-          // White content section
-          Container(
-            margin: EdgeInsets.only(top: 120.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(40.r)),
-            ),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(24.w, 80.h, 24.w, 24.h),
-              child: Column(
-                children: [
-                  // User name and email
-                  Text(
-                    profileProvider.isLoading
-                        ? 'Loading...'
-                        : (profileProvider.userName.isNotEmpty
-                              ? profileProvider.userName
-                              : profileProvider.userEmail),
-                    style: GoogleFonts.poppins(
-                      fontSize: 28.sp,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xff093030),
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  // User email if name is available
-                  if (profileProvider.userName.isNotEmpty &&
-                      profileProvider.userEmail.isNotEmpty)
+            // White content section
+            Container(
+              margin: EdgeInsets.only(top: 120.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(40.r)),
+              ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(24.w, 80.h, 24.w, 24.h),
+                child: Column(
+                  children: [
+                    // User name and email
                     Text(
-                      profileProvider.userEmail,
+                      profileProvider.isLoading
+                          ? 'Đang tải...'
+                          : (profileProvider.userName.isNotEmpty
+                                ? profileProvider.userName
+                                : profileProvider.userEmail),
                       style: GoogleFonts.poppins(
-                        fontSize: 16.sp,
-                        color: Colors.grey,
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xff093030),
                       ),
                     ),
-                  SizedBox(height: 40.h),
-
-                  // Menu items
-                  _buildMenuItem(
-                    context,
-                    icon: Icons.person_outline,
-                    title: 'Edit Profile',
-                    color: Colors.blue,
-                    onTap: () async {
-                      // Navigate to edit profile and wait for result
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ChangeNotifierProvider<ProfileProvider>.value(
-                                value: profileProvider,
-                                child: EditProfileScreen(),
-                              ),
+                    SizedBox(height: 10.h),
+                    // User email if name is available
+                    if (profileProvider.userName.isNotEmpty &&
+                        profileProvider.userEmail.isNotEmpty)
+                      Text(
+                        profileProvider.userEmail,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16.sp,
+                          color: Colors.grey,
                         ),
-                      );
+                      ),
+                    SizedBox(height: 40.h),
 
-                      // If returned with success flag, refresh user data
-                      if (result == true && context.mounted) {
-                        // Force refresh profile data
-                        await profileProvider.refreshUserData();
-                      }
-                    },
-                  ),
-
-                  _buildMenuItem(
-                    context,
-                    icon: Icons.headset_mic_outlined,
-                    title: 'Help',
-                    color: Colors.blue,
-                    onTap: () {
-                      // Navigate to help screen
-                    },
-                  ),
-
-                  _buildMenuItem(
-                    context,
-                    icon: Icons.logout,
-                    title: 'Logout',
-                    color: Colors.red,
-                    onTap: () async {
-                      // Don't show a dialog, as it can cause issues when navigation happens during logout
-                      // Instead use a simpler approach with a loading indicator in a scaffold
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Row(
-                            children: [
-                              CircularProgressIndicator(color: Colors.white),
-                              SizedBox(width: 20),
-                              Text('Đang đăng xuất...'),
-                            ],
+                    // Menu items
+                    _buildMenuItem(
+                      context,
+                      icon: Icons.person_outline,
+                      title: 'Chỉnh sửa hồ sơ',
+                      color: Colors.blue,
+                      onTap: () async {
+                        // Navigate to edit profile and wait for result
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ChangeNotifierProvider<ProfileProvider>.value(
+                                  value: profileProvider,
+                                  child: EditProfileScreen(),
+                                ),
                           ),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-
-                      try {
-                        // Get reference to profile provider
-                        final profileProvider = Provider.of<ProfileProvider>(
-                          context,
-                          listen: false,
                         );
 
-                        // Clear all providers that need to be reset
-                        Provider.of<TotalProvider>(
-                          context,
-                          listen: false,
-                        ).resetState();
+                        // If returned with success flag, refresh user data
+                        if (result == true && context.mounted) {
+                          // Force refresh profile data
+                          await profileProvider.refreshUserData();
+                        }
+                      },
+                    ),
 
-                        // Perform logout with timeout protection
-                        bool logoutComplete = false;
+                    _buildMenuItem(
+                      context,
+                      icon: Icons.headset_mic_outlined,
+                      title: 'Hỗ trợ',
+                      color: Colors.blue,
+                      onTap: () {
+                        Navigator.pushNamed(context, RouterName.help);
+                      },
+                    ),
 
-                        // Set a timeout to ensure we don't hang indefinitely
-                        Future.delayed(const Duration(seconds: 3), () {
-                          if (!logoutComplete && context.mounted) {
-                            // Force navigation to login screen if logout takes too long
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              RouterName.signin,
-                              (route) => false,
-                            );
-                          }
-                        });
-
-                        // Actually perform logout
-                        await profileProvider.logOut();
-                        logoutComplete = true;
-
-                        if (!context.mounted) return;
-
-                        // Navigate to sign in screen
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          RouterName.signin,
-                          (route) => false,
-                        );
-                      } catch (e) {
-                        if (!context.mounted) return;
-
+                    _buildMenuItem(
+                      context,
+                      icon: Icons.logout,
+                      title: 'Đăng xuất',
+                      color: Colors.red,
+                      onTap: () async {
+                        // Don't show a dialog, as it can cause issues when navigation happens during logout
+                        // Instead use a simpler approach with a loading indicator in a scaffold
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Đăng xuất không thành công: $e'),
-                            backgroundColor: Colors.red,
+                          const SnackBar(
+                            content: Row(
+                              children: [
+                                CircularProgressIndicator(color: Colors.white),
+                                SizedBox(width: 20),
+                                Text('Đang đăng xuất...'),
+                              ],
+                            ),
+                            duration: Duration(seconds: 2),
                           ),
                         );
-                      }
-                    },
-                  ),
-                ],
+
+                        try {
+                          // Get reference to profile provider
+                          final profileProvider = Provider.of<ProfileProvider>(
+                            context,
+                            listen: false,
+                          );
+
+                          // Clear all providers that need to be reset
+                          Provider.of<TotalProvider>(
+                            context,
+                            listen: false,
+                          ).resetState();
+
+                          // Perform logout with timeout protection
+                          bool logoutComplete = false;
+
+                          // Set a timeout to ensure we don't hang indefinitely
+                          Future.delayed(const Duration(seconds: 3), () {
+                            if (!logoutComplete && context.mounted) {
+                              // Force navigation to login screen if logout takes too long
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                RouterName.signin,
+                                (route) => false,
+                              );
+                            }
+                          });
+
+                          // Actually perform logout
+                          await profileProvider.logOut();
+                          logoutComplete = true;
+
+                          if (!context.mounted) return;
+
+                          // Navigate to sign in screen
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            RouterName.signin,
+                            (route) => false,
+                          );
+                        } catch (e) {
+                          if (!context.mounted) return;
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Đăng xuất không thành công: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          // Profile picture - adjusted z-index by increasing the elevation with Material widget
-          Positioned(
-            top: 70.h,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Material(
-                elevation:
-                    8, // Added elevation to ensure it appears above the green section
-                shape: CircleBorder(),
-                clipBehavior: Clip.hardEdge,
-                color: Colors.transparent,
-                child: AnimatedOpacity(
-                  opacity: profileProvider.isLoading ? 0.5 : 1.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                    ),
-                    child: ProfileAvatar(
-                      profileUrl: profileProvider.profilePicUrl,
-                      userName: profileProvider.userName,
-                      radius: 50.r,
+            // Profile picture - adjusted z-index by increasing the elevation with Material widget
+            Positioned(
+              top: 70.h,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Material(
+                  elevation:
+                      8, // Added elevation to ensure it appears above the green section
+                  shape: CircleBorder(),
+                  clipBehavior: Clip.hardEdge,
+                  color: Colors.transparent,
+                  child: AnimatedOpacity(
+                    opacity: profileProvider.isLoading ? 0.5 : 1.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                      ),
+                      child: ProfileAvatar(
+                        profileUrl: profileProvider.profilePicUrl,
+                        userName: profileProvider.userName,
+                        radius: 50.r,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: const RootNavBar(currentIndex: 4),
     );
