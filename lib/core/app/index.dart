@@ -15,6 +15,7 @@ import 'package:wise_spend_app/data/providers/get_data_provider.dart';
 import 'package:wise_spend_app/data/providers/total_provider.dart';
 import 'package:wise_spend_app/modules/profile/providers/profile_provider.dart';
 import 'package:wise_spend_app/modules/authenticator/providers/forgot_password_provider.dart';
+import 'package:wise_spend_app/modules/authenticator/providers/password_reset_code_provider.dart';
 import 'package:wise_spend_app/modules/authenticator/providers/sign_in_provier.dart';
 import 'package:wise_spend_app/modules/authenticator/providers/sign_up_provider.dart';
 import 'package:wise_spend_app/data/providers/analysis_provider.dart';
@@ -48,6 +49,7 @@ class Index extends StatelessWidget {
             ), // Add this provider
             ChangeNotifierProvider(create: (_) => SignUpProvider()),
             ChangeNotifierProvider(create: (_) => AnalysisProvider()),
+            ChangeNotifierProvider(create: (_) => PasswordResetCodeProvider()),
           ],
           child: ToastificationWrapper(
             config: const ToastificationConfig(),

@@ -21,6 +21,24 @@ class FinanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String formatAmount(double value) {
+      // Dùng dạng compact nếu quá lớn để tránh tràn
+      final absVal = value.abs();
+      if (absVal >= 1000000000) {
+        // >= 1 tỷ
+        return NumberFormat.compactCurrency(
+          locale: 'vi',
+          symbol: '₫',
+          decimalDigits: 1,
+        ).format(value);
+      }
+      return NumberFormat.currency(
+        locale: 'vi_VN',
+        symbol: '₫',
+        decimalDigits: 0,
+      ).format(value);
+    }
+
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -58,19 +76,19 @@ class FinanceCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 8.h),
-          Text(
-            NumberFormat.currency(
-              locale: 'vi_VN',
-              symbol: '₫',
-              decimalDigits: 0,
-            ).format(amount),
-            style: GoogleFonts.poppins(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-              color: iconColor,
+          FittedBox(
+            alignment: Alignment.centerLeft,
+            fit: BoxFit.scaleDown,
+            child: Text(
+              formatAmount(amount),
+              style: GoogleFonts.poppins(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+                color: iconColor,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

@@ -57,7 +57,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
         children: [
           SizedBox(height: 100.h),
           Text(
-            'Welcome',
+            'Chào mừng',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 30.sp,
@@ -116,7 +116,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                       ),
                       SizedBox(height: 20.h),
                       Text(
-                        'Password',
+                        'Mật khẩu',
                         style: GoogleFonts.poppins(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -152,7 +152,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                             child: signInProvider.isLoading
                                 ? const CircularProgressIndicator()
                                 : ButtonTextWidget(
-                                    text: 'Sign In',
+                                    text: 'Đăng nhập',
                                     color: const Color(0xff00D09E),
                                     width: 207.w,
                                     height: 45.h,
@@ -169,16 +169,21 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                                           if (!mounted) return;
 
                                           // Check if there's an error message
-                                          if (signInProvider.errorMessage !=
-                                              null) {
-                                            // Show error message in a snackbar
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
+                                          if (signInProvider.errorMessage != null) {
+                                            String msg = signInProvider.errorMessage!;
+                                            // Basic FirebaseAuth error localization
+                                            if (msg.contains('wrong-password')) {
+                                              msg = 'Sai mật khẩu';
+                                            } else if (msg.contains('user-not-found')) {
+                                              msg = 'Email không tồn tại';
+                                            } else if (msg.contains('invalid-email')) {
+                                              msg = 'Email không hợp lệ';
+                                            } else if (msg.contains('too-many-requests')) {
+                                              msg = 'Quá nhiều lần thử. Vui lòng thử lại sau';
+                                            }
+                                            ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
-                                                content: Text(
-                                                  signInProvider.errorMessage!,
-                                                ),
+                                                content: Text(msg),
                                                 backgroundColor: Colors.red,
                                               ),
                                             );
@@ -230,7 +235,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                             );
                           },
                           child: Text(
-                            'Forgot Password?',
+                            'Quên mật khẩu?',
                             style: GoogleFonts.poppins(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
@@ -242,7 +247,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                       SizedBox(height: 20.h),
                       Center(
                         child: ButtonTextWidget(
-                          text: 'Sign Up',
+                          text: 'Đăng ký',
                           color: const Color(0xffDFF7E2),
                           width: 207.w,
                           height: 45.h,
@@ -262,7 +267,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Don't have an account?",
+                            "Chưa có tài khoản?",
                             style: GoogleFonts.leagueSpartan(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w500,
@@ -274,7 +279,7 @@ class _SignInScreenContentState extends State<_SignInScreenContent> {
                               Navigator.pushNamed(context, RouterName.signup);
                             },
                             child: Text(
-                              'Sign Up',
+                              'Đăng ký',
                               style: GoogleFonts.leagueSpartan(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,

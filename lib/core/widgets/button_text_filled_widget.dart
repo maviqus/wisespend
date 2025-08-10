@@ -35,7 +35,7 @@ class ButtonTextFilledWidget extends StatefulWidget {
     this.obscureText = false,
     this.enabled = true,
     this.keyboardType,
-  this.inputFormatters,
+    this.inputFormatters,
   });
 
   @override

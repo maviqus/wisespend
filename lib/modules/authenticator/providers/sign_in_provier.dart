@@ -53,8 +53,30 @@ class SignInProvider extends ChangeNotifier {
         print("❌ Login failed: user is null after authentication");
       }
     } on FirebaseAuthException catch (e) {
-      _errorMessage = e.message;
-      print("❌ Firebase Auth Error: ${e.message}");
+      // Map common Firebase error codes to Vietnamese
+      switch (e.code) {
+        case 'wrong-password':
+          _errorMessage = 'Sai mật khẩu';
+          break;
+        case 'user-not-found':
+          _errorMessage = 'Email không tồn tại';
+          break;
+        case 'invalid-email':
+          _errorMessage = 'Email không hợp lệ';
+          break;
+        case 'too-many-requests':
+          _errorMessage = 'Quá nhiều lần thử. Vui lòng thử lại sau';
+          break;
+        case 'user-disabled':
+          _errorMessage = 'Tài khoản đã bị vô hiệu hoá';
+          break;
+        case 'network-request-failed':
+          _errorMessage = 'Lỗi mạng. Kiểm tra kết nối';
+          break;
+        default:
+          _errorMessage = 'Lỗi đăng nhập: ${e.code}';
+      }
+      print("❌ Firebase Auth Error (${e.code}): ${e.message}");
     } catch (e) {
       _errorMessage = e.toString();
       print("❌ General Error: ${e.toString()}");

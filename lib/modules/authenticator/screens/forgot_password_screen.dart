@@ -5,15 +5,14 @@ import 'package:provider/provider.dart';
 import 'package:wise_spend_app/core/widgets/button_text_filled_widget.dart';
 import 'package:wise_spend_app/core/widgets/button_text_widget.dart';
 import 'package:wise_spend_app/modules/authenticator/providers/forgot_password_provider.dart';
-import 'package:wise_spend_app/routers/router_name.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Get the app-level provider instead of creating a new one
-    Provider.of<ForgotPasswordProvider>(context, listen: false);
+  // Ensure forgot password provider is initialized
+  Provider.of<ForgotPasswordProvider>(context, listen: false);
 
     return _ForgotPasswordContent();
   }
@@ -44,7 +43,7 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
         children: [
           SizedBox(height: 100.h),
           Text(
-            'Reset Password',
+            'Quên mật khẩu',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 30.sp,
@@ -73,7 +72,7 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                     children: [
                       SizedBox(height: 50.h),
                       Text(
-                        'Please enter your registered email address to receive password reset instructions',
+                        'Nhập email đã đăng ký để nhận hướng dẫn đặt lại mật khẩu',
                         style: GoogleFonts.poppins(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w400,
@@ -103,50 +102,45 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return 'Vui lòng nhập email';
                           }
                           if (!RegExp(
                             r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                           ).hasMatch(value)) {
-                            return 'Please enter a valid email';
+                            return 'Email không hợp lệ';
                           }
                           return null;
                         },
                       ),
                       SizedBox(height: 40.h),
                       Consumer<ForgotPasswordProvider>(
-                        builder: (context, provider, _) {
+                        builder: (context, fpProvider, _) {
                           return Center(
-                            child: provider.isLoading
+                            child: (fpProvider.isLoading)
                                 ? const CircularProgressIndicator()
                                 : ButtonTextWidget(
-                                    text: 'Send Instructions',
+                                    text: 'Gửi email',
                                     color: const Color(0xff00D09E),
                                     width: 207.w,
                                     height: 45.h,
                                     radius: 30.r,
                                     onTap: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        await provider.sendPasswordResetEmail(
-                                          _emailController.text.trim(),
-                                        );
-
+                                        final email = _emailController.text
+                                            .trim();
+                                        await fpProvider.sendPasswordResetEmail(email);
                                         if (!context.mounted) return;
-
-                                        if (provider.errorMessage == null) {
-                                          Navigator.pushNamed(
-                                            context,
-                                            RouterName.recoverPassword,
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Error: ${provider.errorMessage}',
-                                              ),
+                                        final err = fpProvider.errorMessage;
+                                        if (err == null) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Email đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư.'),
                                             ),
+                                          );
+                                          Navigator.pop(context); // quay lại màn login
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Lỗi: $err')),
                                           );
                                         }
                                       }
@@ -165,7 +159,7 @@ class _ForgotPasswordContentState extends State<_ForgotPasswordContent> {
                         child: TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: Text(
-                            'Back to Login',
+                            'Quay lại đăng nhập',
                             style: GoogleFonts.poppins(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w500,

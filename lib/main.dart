@@ -17,7 +17,7 @@ void main() async {
 
     await FirebaseService.init();
 
-  runApp(const Index());
+    runApp(const Index());
   } catch (e, _) {
     // Show a minimal error UI instead of print
     runApp(

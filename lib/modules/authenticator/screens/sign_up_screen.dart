@@ -48,7 +48,7 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
         children: [
           SizedBox(height: 100.h),
           Text(
-            'Create Account',
+            'Tạo tài khoản',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 30.sp,
@@ -74,7 +74,7 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Username',
+                        'Tên người dùng',
                         style: GoogleFonts.poppins(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -131,7 +131,7 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                       ),
                       SizedBox(height: 20.h),
                       Text(
-                        'Password',
+                        'Mật khẩu',
                         style: GoogleFonts.poppins(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -176,7 +176,7 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                       ),
                       SizedBox(height: 20.h),
                       Text(
-                        'Confirm Password',
+                        'Xác nhận mật khẩu',
                         style: GoogleFonts.poppins(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -227,7 +227,7 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                             child: signUpProvider.isLoading
                                 ? const CircularProgressIndicator()
                                 : ButtonTextWidget(
-                                    text: 'Sign Up',
+                                    text: 'Đăng ký',
                                     color: const Color(0xff00D09E),
                                     width: 207.w,
                                     height: 45.h,
@@ -246,9 +246,9 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                                                   null) {
                                                 ShowMessage(
                                                   context: context,
-                                                  title: "Sign Up Successful",
-                                                  description:
-                                                      "Your account has been created.",
+                          title: "Đăng ký thành công",
+                          description:
+                            "Tài khoản của bạn đã được tạo.",
                                                   type: ToastificationType
                                                       .success,
                                                   alignment:
@@ -267,7 +267,7 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                                                 if (!mounted) return;
                                                 ShowMessage(
                                                   context: context,
-                                                  title: "Sign Up Failed",
+                                                  title: "Đăng ký thất bại",
                                                   description: signUpProvider
                                                       .errorMessage!,
                                                   type:
@@ -296,7 +296,7 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Already have an account?",
+                            "Đã có tài khoản?",
                             style: GoogleFonts.leagueSpartan(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w500,
@@ -308,7 +308,7 @@ class _SignUpScreenContentState extends State<_SignUpScreenContent> {
                               Navigator.pushNamed(context, RouterName.signin);
                             },
                             child: Text(
-                              'Sign In',
+                              'Đăng nhập',
                               style: GoogleFonts.leagueSpartan(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,

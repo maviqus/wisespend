@@ -15,6 +15,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
 
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      // Thành công: không set error
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message;
     } catch (e) {

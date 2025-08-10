@@ -83,7 +83,7 @@ class AddExpensesProvider extends ChangeNotifier {
     if (rawDigits.length > kMaxAmountDigits) {
       NotificationWidget.show(
         context,
-        'Số tiền quá lớn (tối đa ${kMaxAmountDigits} chữ số)',
+        'Số tiền quá lớn (tối đa $kMaxAmountDigits chữ số)',
         type: NotificationType.error,
       );
       return false;
